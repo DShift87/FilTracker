@@ -5,6 +5,7 @@ import { Button } from "@/app/components/ui/button";
 import { FilamentCard } from "@/app/components/FilamentCard";
 import { FilamentDialog } from "@/app/components/FilamentDialog";
 import { FilamentQRDialog } from "@/app/components/FilamentQRDialog";
+import { QRScannerDialog } from "@/app/components/QRScannerDialog";
 import { AddFab } from "@/app/components/AddFab";
 import { useApp, Filament } from "@/app/context/AppContext";
 import { PlusIcon } from "@/imports/plus-icon";
@@ -23,6 +24,7 @@ export function Filaments() {
   const [searchQuery, setSearchQuery] = useState("");
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
   const [selectedFilamentForQR, setSelectedFilamentForQR] = useState<Filament | null>(null);
+  const [qrScannerOpen, setQrScannerOpen] = useState(false);
 
   const handleSaveFilament = (filamentData: Omit<Filament, "id"> | Filament) => {
     if ("id" in filamentData) {
@@ -102,7 +104,12 @@ export function Filaments() {
             <Button variant="ghost" size="icon" onClick={toggleSearch}>
               <SearchIcon />
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => {}}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setQrScannerOpen(true)}
+              aria-label="Scan QR code"
+            >
               <QrScannerIcon />
             </Button>
             <Button variant="ghost" size="icon" onClick={() => {}}>
@@ -157,6 +164,16 @@ export function Filaments() {
         }}
         onSave={handleSaveFilament}
         editFilament={editingFilament}
+      />
+
+      {/* QR Scanner - opens camera to scan filament QR */}
+      <QRScannerDialog
+        open={qrScannerOpen}
+        onOpenChange={setQrScannerOpen}
+        onScan={(filamentId) => {
+          setQrScannerOpen(false);
+          navigate(`/filaments/${filamentId}`);
+        }}
       />
 
       {/* QR Dialog */}

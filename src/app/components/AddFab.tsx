@@ -1,5 +1,5 @@
 const FAB_SIZE = 56;
-const ICON_SIZE = 40;
+const ICON_SIZE = 24; /* same as navbar icons (Dashboard, Filament, Parts) */
 
 export function AddFab({ onClick }: { onClick: () => void }) {
   return (
