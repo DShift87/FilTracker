@@ -56,28 +56,22 @@ export function PrintedPartCard({
               <Badge variant="outline" className="text-xs">
                 {formattedDate}
               </Badge>
-              <Badge variant="secondary" className="text-xs truncate">
-                {filamentName || "Unknown"}
-              </Badge>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="space-y-2">
-        <div className="flex justify-between text-sm">
-          <span className="text-muted-foreground">Weight Used</span>
-          <span className="font-medium">{part.weightUsed}g</span>
+      <div className="space-y-2 mt-1.5">
+        <div className="flex justify-between items-baseline gap-3 text-sm">
+          <span className="text-muted-foreground shrink-0">Weight Used</span>
+          <span className="font-medium tabular-nums text-right min-w-[4rem]">{part.weightUsed}g</span>
         </div>
-
-        {partCost !== null && (
-          <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Cost</span>
-            <span className="font-medium text-green-600">
-              ${partCost.toFixed(2)}
-            </span>
-          </div>
-        )}
+        <div className="flex justify-between items-baseline gap-3 text-sm">
+          <span className="text-muted-foreground shrink-0">Cost</span>
+          <span className="font-medium text-green-600 tabular-nums text-right min-w-[4rem]">
+            {partCost !== null ? `$${partCost.toFixed(2)}` : "—"}
+          </span>
+        </div>
       </div>
     </Card>
   );

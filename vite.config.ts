@@ -5,32 +5,58 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 
 const isProd = process.env.NODE_ENV === 'production'
-const base = isProd ? '/3d-printer-tracker/' : '/'
+// Production: use GitHub repo name (FilTracker) so deploy works at github.io/FilTracker/
+// Dev: root so app is at http://localhost:5173/
+const base = isProd ? '/FilTracker/' : '/'
 
 // Plugin: serve correct manifest (start_url matches base) for dev and build
 function manifestPlugin() {
   return {
     name: 'manifest-base',
     configureServer(server) {
+      const devPublic = path.resolve(__dirname, 'public/3d-printer-tracker')
       server.middlewares.use((req, res, next) => {
-        if (req.url?.startsWith('/3d-printer-tracker/manifest.webmanifest')) {
-          const manifestPath = path.resolve(__dirname, 'public/3d-printer-tracker/manifest.webmanifest')
-          const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'))
-          manifest.start_url = base
-          res.setHeader('Content-Type', 'application/manifest+json')
-          res.end(JSON.stringify(manifest))
-          return
+        const url = req.url?.split('?')[0]
+        if (url === '/manifest.webmanifest' || url === '/3d-printer-tracker/manifest.webmanifest') {
+          try {
+            const manifest = JSON.parse(fs.readFileSync(path.join(devPublic, 'manifest.webmanifest'), 'utf-8'))
+            manifest.start_url = base
+            res.setHeader('Content-Type', 'application/manifest+json')
+            res.end(JSON.stringify(manifest))
+            return
+          } catch { }
+        }
+        if (url === '/icon.svg' || url === '/icon-192.png' || url === '/icon-512.png') {
+          try {
+            const filePath = path.join(devPublic, path.basename(url))
+            if (fs.existsSync(filePath)) {
+              res.setHeader('Content-Type', url.endsWith('.svg') ? 'image/svg+xml' : 'image/png')
+              res.end(fs.readFileSync(filePath))
+              return
+            }
+          } catch { }
         }
         next()
       })
     },
     closeBundle() {
-      const manifestPath = path.resolve(__dirname, 'public/3d-printer-tracker/manifest.webmanifest')
-      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'))
-      manifest.start_url = base
-      const distPath = path.resolve(__dirname, 'dist/3d-printer-tracker/manifest.webmanifest')
-      fs.mkdirSync(path.dirname(distPath), { recursive: true })
-      fs.writeFileSync(distPath, JSON.stringify(manifest, null, 2))
+      try {
+        const manifestPath = path.resolve(__dirname, 'public/3d-printer-tracker/manifest.webmanifest')
+        const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'))
+        manifest.start_url = base
+        const distDir = path.resolve(__dirname, 'dist', isProd ? 'FilTracker' : '3d-printer-tracker')
+        fs.mkdirSync(distDir, { recursive: true })
+        fs.writeFileSync(path.join(distDir, 'manifest.webmanifest'), JSON.stringify(manifest, null, 2))
+        // Copy icons to same folder for production (FilTracker)
+        if (isProd) {
+          const icons = ['icon.svg', 'icon-192.png', 'icon-512.png']
+          const srcDir = path.resolve(__dirname, 'public/3d-printer-tracker')
+          icons.forEach((name) => {
+            const src = path.join(srcDir, name)
+            if (fs.existsSync(src)) fs.copyFileSync(src, path.join(distDir, name))
+          })
+        }
+      } catch (_) {}
     },
   }
 }

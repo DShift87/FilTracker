@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -20,6 +20,7 @@ import {
 } from "@/app/components/ui/select";
 import { PrintedPart } from "@/app/context/AppContext";
 import { useApp } from "@/app/context/AppContext";
+import { resizeImageToDataUrl } from "@/app/lib/imageUtils";
 
 interface PrintedPartDialogProps {
   open: boolean;
@@ -35,6 +36,8 @@ export function PrintedPartDialog({
   editPart,
 }: PrintedPartDialogProps) {
   const { filaments } = useApp();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     filamentId: "",
@@ -43,6 +46,7 @@ export function PrintedPartDialog({
     printTimeMinutes: "",
     printDate: new Date().toISOString().split("T")[0],
     notes: "",
+    imageUrl: "" as string,
   });
 
   useEffect(() => {
@@ -57,6 +61,7 @@ export function PrintedPartDialog({
         printTimeMinutes: minutes.toString(),
         printDate: editPart.printDate,
         notes: editPart.notes || "",
+        imageUrl: editPart.imageUrl || "",
       });
     } else {
       setFormData({
@@ -67,9 +72,25 @@ export function PrintedPartDialog({
         printTimeMinutes: "",
         printDate: new Date().toISOString().split("T")[0],
         notes: "",
+        imageUrl: "",
       });
     }
   }, [editPart, open, filaments]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    e.target.value = "";
+    try {
+      const dataUrl = await resizeImageToDataUrl(file);
+      setFormData((prev) => ({ ...prev, imageUrl: dataUrl }));
+    } catch {
+      setFormData((prev) => ({ ...prev, imageUrl: "" }));
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,6 +106,7 @@ export function PrintedPartDialog({
       printTime,
       printDate: formData.printDate,
       notes: formData.notes || undefined,
+      imageUrl: formData.imageUrl || undefined,
     };
 
     if (editPart) {
@@ -117,6 +139,28 @@ export function PrintedPartDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
+            {/* Part photo hidden for now */}
+            {false && (
+              <div className="space-y-2">
+                <Label>Part Photo</Label>
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
+                {formData.imageUrl ? (
+                  <div className="rounded-lg overflow-hidden bg-muted border">
+                    <img src={formData.imageUrl} alt="Part" className="w-full aspect-video object-cover" />
+                    <div className="flex gap-2 p-2">
+                      <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}>{uploading ? "Uploading…" : "Change image"}</Button>
+                      <Button type="button" variant="ghost" size="sm" className="text-destructive" onClick={() => setFormData((p) => ({ ...p, imageUrl: "" }))}>Remove</Button>
+                    </div>
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="w-full rounded-lg border-2 border-dashed border-muted-foreground/30 aspect-video flex flex-col items-center justify-center gap-2 text-muted-foreground hover:bg-muted/50 transition-colors">
+                    <span className="text-2xl" aria-hidden>📷</span>
+                    <span className="text-sm">{uploading ? "Uploading…" : "Add photo"}</span>
+                  </button>
+                )}
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="name">Part Name</Label>
               <Input

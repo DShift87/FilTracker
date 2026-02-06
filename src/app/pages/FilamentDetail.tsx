@@ -212,30 +212,29 @@ export function FilamentDetail() {
           </div>
         </div>
 
-        {/* Main Info Card */}
-        <Card className="p-6">
-          <div className="flex items-start gap-4 mb-4">
+        {/* Main Info Card - same layout as part detail: icon, title, badges below */}
+        <Card className="p-4">
+          <div className="flex items-center gap-4">
             <div
-              className="w-20 h-20 rounded-xl flex items-center justify-center shadow-lg"
+              className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg shrink-0"
               style={{ backgroundColor: filament.colorHex }}
             >
-              <FilamentIcon className="w-10 h-10 text-white drop-shadow-md" />
+              <FilamentIcon className="w-6 h-6 text-white drop-shadow-md" />
             </div>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold mb-2">{filament.name}</h1>
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="secondary">{filament.material}</Badge>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl font-bold truncate">{filament.manufacturer}</h1>
+              <div className="flex flex-wrap gap-2 mt-1">
+                <Badge variant="outline">{filament.material}</Badge>
                 <Badge variant="outline">{filament.diameter}mm</Badge>
                 {isLow && <Badge variant="destructive">Low Stock</Badge>}
               </div>
             </div>
           </div>
+        </Card>
 
-          <div className="space-y-3 pt-4 border-t">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Manufacturer</span>
-              <span className="font-medium">{filament.manufacturer}</span>
-            </div>
+        {/* Filament Properties */}
+        <Card className="p-4">
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Color</span>
               <div className="flex items-center gap-2">
@@ -255,10 +254,10 @@ export function FilamentDetail() {
           </div>
         </Card>
 
-        {/* Weight Status */}
-        <Card className="p-6">
-          <h2 className="font-semibold mb-4">Weight Status</h2>
-          <div className="space-y-4">
+        {/* Weight Status - p-4 to match top card alignment (same layout as part detail) */}
+        <Card className="p-4">
+          <h2 className="font-semibold mb-3">Weight Status</h2>
+          <div className="space-y-3">
             <div>
               <div className="flex justify-between text-sm mb-2">
                 <span className="text-muted-foreground">Remaining</span>
@@ -277,7 +276,7 @@ export function FilamentDetail() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+            <div className="grid grid-cols-2 gap-3 pt-3 border-t">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center">
                   <Weight className="h-5 w-5 text-green-500" />
@@ -331,9 +330,9 @@ export function FilamentDetail() {
           )}
         </div>
 
-        {/* QR Code Section */}
-        <Card className="p-6">
-          <h2 className="font-semibold mb-4">Spool Label</h2>
+        {/* QR Code Section - p-4 for alignment with top cards */}
+        <Card className="p-4">
+          <h2 className="font-semibold mb-3">Spool Label</h2>
           <div className="flex flex-col items-center gap-4">
             <div className="bg-white p-4 rounded-lg">
               <QRCodeSVG

@@ -48,7 +48,7 @@ export function Dashboard() {
       {/* Header */}
       <div className="pt-2">
         <div className="flex items-center justify-between gap-2">
-          <h1 className="text-2xl font-bold mb-1">Dashboard</h1>
+          <h1 className="text-2xl font-bold mb-1">Dashboard +</h1>
           {isCloudSync && (
             <span className="text-xs text-muted-foreground shrink-0">
               {isCloudLoading ? "Syncing…" : "☁️ Cloud"}
@@ -111,9 +111,18 @@ export function Dashboard() {
         </Card>
       </div>
 
-      {/* Recent Activity */}
+      {/* Recent Activity - top 3 + See all */}
       <div>
-        <h2 className="font-semibold mb-3">Recent Prints</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold">Recent Prints</h2>
+          <button
+            type="button"
+            onClick={() => navigate("/parts")}
+            className="text-sm text-primary font-medium hover:underline"
+          >
+            See all
+          </button>
+        </div>
         {recentParts.length > 0 ? (
           <div className="space-y-2">
             {recentParts.map((part) => {
@@ -149,9 +158,18 @@ export function Dashboard() {
         )}
       </div>
 
-      {/* Most Used */}
+      {/* Most Used - top 3 + See all */}
       <div>
-        <h2 className="font-semibold mb-3">Most Used</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold">Most Used</h2>
+          <button
+            type="button"
+            onClick={() => navigate("/filaments")}
+            className="text-sm text-primary font-medium hover:underline"
+          >
+            See all
+          </button>
+        </div>
         {mostUsedFilaments.length > 0 ? (
           <div className="space-y-2">
             {mostUsedFilaments.map((filament) => (

@@ -37,10 +37,10 @@ export function MobileLayout({ children }: MobileLayoutProps) {
       >
         <div className="flex justify-around items-center h-16 px-4">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path || 
+            const isActive = location.pathname === item.path ||
               (item.path === "/filaments" && location.pathname.startsWith("/filaments"));
             const Icon = item.icon;
-            
+
             return (
               <Link
                 key={item.path}
