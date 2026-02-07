@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Box, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useNavigate, useLocation } from "react-router";
 import { Button } from "@/app/components/ui/button";
 import { PrintedPartCard } from "@/app/components/PrintedPartCard";
@@ -11,6 +11,7 @@ import { SearchIcon } from "@/imports/search-icon";
 import { QrScannerIcon } from "@/imports/qr-scanner-icon";
 import { NfcReaderIcon } from "@/imports/nfc-reader-icon";
 import { Input } from "@/app/components/ui/input";
+import { RecentPrintsEmptyIcon } from "@/imports/recent-prints-empty-icon";
 import {
   Select,
   SelectContent,
@@ -215,7 +216,7 @@ export function PrintedParts() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <Box className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+          <RecentPrintsEmptyIcon className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
           <h3 className="font-semibold mb-2">No parts found</h3>
           <p className="text-sm text-muted-foreground mb-4">
             {filterFilament !== "all"

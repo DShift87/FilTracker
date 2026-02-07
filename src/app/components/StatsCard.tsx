@@ -9,7 +9,7 @@ interface StatsCardProps {
 
 export function StatsCard({ title, value, icon, description }: StatsCardProps) {
   return (
-    <Card className="p-4">
+    <Card className="!p-[16px] gap-0">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-muted-foreground">{title}</p>

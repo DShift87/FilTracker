@@ -1,6 +1,6 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { DashboardIcon } from "@/imports/dashboard-icon";
 import { FilamentIcon } from "@/imports/filament-icon";
 import { PartsIcon } from "@/imports/parts-icon";
@@ -15,12 +15,27 @@ export function MobileLayout({ children }: MobileLayoutProps) {
   const navigate = useNavigate();
   const { triggerAdd } = useAddAction();
   const [addChoiceOpen, setAddChoiceOpen] = useState(false);
+  const [menuAnimationDone, setMenuAnimationDone] = useState(false);
+  const [iconsReady, setIconsReady] = useState(false);
 
   const isDashboard = location.pathname === "/";
 
+  // Delay icon render until after scale animation to avoid SVG rendering glitches
+  useEffect(() => {
+    if (isDashboard && addChoiceOpen) {
+      const t = setTimeout(() => setIconsReady(true), 350);
+      return () => clearTimeout(t);
+    } else {
+      setIconsReady(false);
+    }
+  }, [isDashboard, addChoiceOpen]);
+
   const handleFabClick = () => {
     if (isDashboard) {
-      setAddChoiceOpen((o) => !o);
+      setAddChoiceOpen((o) => {
+        if (o) setMenuAnimationDone(false);
+        return !o;
+      });
     } else {
       triggerAdd();
     }
@@ -52,16 +67,16 @@ export function MobileLayout({ children }: MobileLayoutProps) {
         {children}
       </main>
 
-      {/* Bottom Navigation - nav pill + FAB as siblings, FAB outside next to nav */}
+      {/* Bottom Navigation - matches content width (max-w-md mx-auto p-4) */}
       <nav
-        className="fixed left-0 right-0 flex justify-center items-end px-4"
+        className="fixed left-0 right-0 z-50 flex justify-center items-end w-full"
         style={{
           bottom: "max(12px, env(safe-area-inset-bottom))",
         }}
       >
-        <div className="content-stretch flex gap-[9px] items-center pt-[16px] px-[16px] pb-0">
-          {/* Nav pill - 3 items only */}
-          <div className="bg-white content-stretch flex gap-[8px] items-center p-[4px] rounded-[999px] shrink-0 w-[293px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] relative">
+        <div className="content-stretch flex gap-[9px] items-center pt-[16px] pb-0 w-full max-w-md mx-auto px-4 min-w-0">
+          {/* Nav pill - 3 items only, fills available space */}
+          <div className="bg-white content-stretch flex gap-[8px] items-center p-[4px] rounded-[999px] flex-1 min-w-0 shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] relative">
             {navItems.map((item) => {
               const isActive =
                 location.pathname === item.path ||
@@ -99,30 +114,71 @@ export function MobileLayout({ children }: MobileLayoutProps) {
           </div>
           {/* FAB + add menu (Dashboard only) */}
           <div className="relative shrink-0">
-            {isDashboard && addChoiceOpen && (
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col gap-[12px] items-center mb-6">
-                <div className="relative flex justify-center items-center">
-                  <p className="absolute right-full mr-3 top-1/2 -translate-y-1/2 font-medium leading-normal text-[#7a7a7a] text-[12px] whitespace-nowrap">Filament</p>
-                  <button
-                    type="button"
-                    onClick={handleCreateFilament}
-                    className="bg-white flex flex-col items-center justify-center p-[4px] rounded-[9999px] shrink-0 size-[40px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] hover:bg-gray-50 transition-colors"
+            <AnimatePresence>
+              {isDashboard && addChoiceOpen && (
+                <motion.div
+                  key="add-menu"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute bottom-full left-1/2 -translate-x-1/2 flex flex-col-reverse gap-[12px] items-center mb-6 z-10"
+                >
+                  <motion.div
+                    className={`relative flex justify-center items-center origin-bottom ${menuAnimationDone ? "z-10" : ""}`}
+                    initial={{ opacity: 0, scale: 0, y: 8 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0, y: 8 }}
+                    onAnimationComplete={() => setMenuAnimationDone(true)}
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 28,
+                      delay: 0.05,
+                    }}
                   >
-                    <FilamentIcon active className="h-5 w-5 text-[#F26D00]" />
-                  </button>
-                </div>
-                <div className="relative flex justify-center items-center">
-                  <p className="absolute right-full mr-3 top-1/2 -translate-y-1/2 font-medium leading-normal text-[#7a7a7a] text-[12px] whitespace-nowrap">Part</p>
-                  <button
-                    type="button"
-                    onClick={handleCreatePart}
-                    className="bg-white flex flex-col items-center justify-center p-[4px] rounded-[9999px] shrink-0 size-[40px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] hover:bg-gray-50 transition-colors"
+                    <p className="absolute right-full mr-3 top-1/2 -translate-y-1/2 font-medium leading-normal text-[#7a7a7a] text-[12px] whitespace-nowrap">Part</p>
+                    <button
+                      type="button"
+                      onClick={handleCreatePart}
+                      className="bg-white flex flex-col items-center justify-center p-[4px] rounded-[9999px] shrink-0 size-[40px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] hover:bg-gray-50 transition-colors active:scale-95 relative z-[1]"
+                    >
+                      {iconsReady ? (
+                        <PartsIcon active className="h-5 w-5 text-[#F26D00] animate-in fade-in duration-150" />
+                      ) : (
+                        <span className="h-5 w-5" aria-hidden />
+                      )}
+                    </button>
+                  </motion.div>
+                  <motion.div
+                    className={`relative flex justify-center items-center origin-bottom ${menuAnimationDone ? "z-20" : ""}`}
+                    initial={{ opacity: 0, scale: 0, y: 8 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0, y: 8 }}
+                    onAnimationComplete={() => setMenuAnimationDone(true)}
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 28,
+                      delay: 0.1,
+                    }}
                   >
-                    <PartsIcon active className="h-5 w-5 text-[#F26D00]" />
-                  </button>
-                </div>
-              </div>
-            )}
+                    <p className="absolute right-full mr-3 top-1/2 -translate-y-1/2 font-medium leading-normal text-[#7a7a7a] text-[12px] whitespace-nowrap">Filament</p>
+                    <button
+                      type="button"
+                      onClick={handleCreateFilament}
+                      className="bg-white flex flex-col items-center justify-center p-[4px] rounded-[9999px] shrink-0 size-[40px] shadow-[0_-4px_20px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.08)] hover:bg-gray-50 transition-colors active:scale-95 relative z-[1]"
+                    >
+                      {iconsReady ? (
+                        <FilamentIcon active className="h-5 w-5 text-[#F26D00] animate-in fade-in duration-150" />
+                      ) : (
+                        <span className="h-5 w-5" aria-hidden />
+                      )}
+                    </button>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <button
               type="button"
               onClick={handleFabClick}

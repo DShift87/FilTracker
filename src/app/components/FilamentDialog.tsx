@@ -58,6 +58,7 @@ const MANUFACTURERS = [
   "Ninjatek",
   "Verbatim",
   "Dremel",
+  "Elegoo",
   "FormFutura",
   "Filamatrix",
   "3DXTech",
@@ -169,7 +170,7 @@ export function FilamentDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            {/* Brand (Manufacturer) - First Field */}
+            {/* Brand (Manufacturer) */}
             <div className="space-y-2">
               <Label htmlFor="manufacturer">Brand</Label>
               <Select
@@ -191,19 +192,7 @@ export function FilamentDialog({
               </Select>
             </div>
 
-            {/* Description - Second Field (Not Mandatory) */}
-            <div className="space-y-2">
-              <Label htmlFor="name">Description</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-                placeholder="e.g., Matte Black PLA"
-              />
-            </div>
-
+            {/* Material and Diameter */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="material">Material</Label>
@@ -332,6 +321,19 @@ export function FilamentDialog({
                   placeholder="Optional"
                 />
               </div>
+            </div>
+
+            {/* Description - Last */}
+            <div className="space-y-2">
+              <Label htmlFor="name">Description</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                placeholder="e.g., Matte Black PLA"
+              />
             </div>
           </div>
           <DialogFooter>

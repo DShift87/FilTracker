@@ -1,12 +1,17 @@
-import { Package, Box, AlertTriangle, TrendingUp, Clock } from "lucide-react";
+import { AlertTriangle, Clock } from "lucide-react";
 import { Card } from "@/app/components/ui/card";
+import { MaterialChip } from "@/app/components/figma/MaterialChip";
+import { getIconShadow } from "@/app/components/ui/utils";
 import { Progress } from "@/app/components/ui/progress";
 import { useApp } from "@/app/context/AppContext";
 import { Badge } from "@/app/components/ui/badge";
 import { FilamentIcon } from "@/imports/filament-icon";
 import { PartsIcon } from "@/imports/parts-icon";
 import { useNavigate } from "react-router";
-import { DollarIcon } from "@/imports/dollar-icon";
+import { InventoryValueIcon } from "@/imports/inventory-value-icon";
+import { LowStockIcon } from "@/imports/low-stock-icon";
+import { RecentPrintsEmptyIcon } from "@/imports/recent-prints-empty-icon";
+import { MostUsedEmptyIcon } from "@/imports/most-used-empty-icon";
 
 export function Dashboard() {
   const { filaments, printedParts, isCloudSync, isCloudLoading } = useApp();
@@ -61,49 +66,61 @@ export function Dashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-3">
-        <Card className="p-3 cursor-pointer hover:bg-accent/50 transition-colors bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-orange-200/50" onClick={() => navigate("/filaments")}>
+      <div className="grid grid-cols-2 gap-3 w-full items-stretch">
+        <Card className="!p-[16px] gap-0 w-full max-w-none flex flex-col justify-center cursor-pointer hover:bg-accent/50 transition-colors bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-orange-200/50" onClick={() => navigate("/filaments")}>
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-orange-500/20 flex items-center justify-center shrink-0 shadow-sm">
-              <FilamentIcon className="h-5 w-5 text-orange-600" />
+            <div
+              className="h-10 w-10 rounded-lg bg-orange-500/20 flex items-center justify-center shrink-0"
+              style={{ boxShadow: getIconShadow("#f97316") }}
+            >
+              <FilamentIcon active className="h-5 w-5 text-orange-600" />
             </div>
-            <div>
+            <div className="min-w-0 flex-1 min-h-[2.5rem] flex flex-col justify-center">
               <p className="text-xs text-orange-600/70 mb-0.5 font-medium">Filament Spools</p>
               <p className="text-2xl font-bold leading-none text-orange-600">{totalSpools}</p>
             </div>
           </div>
         </Card>
 
-        <Card className="p-3 cursor-pointer hover:bg-accent/50 transition-colors bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-200/50" onClick={() => navigate("/parts")}>
+        <Card className="!p-[16px] gap-0 w-full max-w-none flex flex-col justify-center cursor-pointer hover:bg-accent/50 transition-colors bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-200/50" onClick={() => navigate("/parts")}>
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0 shadow-sm">
-              <PartsIcon className="h-5 w-5 text-blue-600" />
+            <div
+              className="h-10 w-10 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0"
+              style={{ boxShadow: getIconShadow("#3b82f6") }}
+            >
+              <PartsIcon active className="h-5 w-5 text-blue-600" />
             </div>
-            <div>
+            <div className="min-w-0 flex-1 min-h-[2.5rem] flex flex-col justify-center">
               <p className="text-xs text-blue-600/70 mb-0.5 font-medium">Printed Parts</p>
               <p className="text-2xl font-bold leading-none text-blue-600">{totalParts}</p>
             </div>
           </div>
         </Card>
 
-        <Card className="p-3 bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-200/50">
+        <Card className="!p-[16px] gap-0 w-full max-w-none flex flex-col justify-center cursor-pointer hover:bg-accent/50 transition-colors bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-200/50" onClick={() => navigate("/filaments", { state: { tab: "low" } })}>
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-red-500/20 flex items-center justify-center shrink-0 shadow-sm">
-              <Package className="h-5 w-5 text-red-600" />
+            <div
+              className="h-10 w-10 rounded-lg bg-red-500/20 flex items-center justify-center shrink-0"
+              style={{ boxShadow: getIconShadow("#ef4444") }}
+            >
+              <LowStockIcon className="h-5 w-5 text-red-600" />
             </div>
-            <div>
+            <div className="min-w-0 flex-1 min-h-[2.5rem] flex flex-col justify-center">
               <p className="text-xs text-red-600/70 mb-0.5 font-medium">Low Stock</p>
               <p className="text-2xl font-bold leading-none text-red-600">{lowStockCount}</p>
             </div>
           </div>
         </Card>
 
-        <Card className="p-3 bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-200/50">
+        <Card className="!p-[16px] gap-0 w-full max-w-none flex flex-col justify-center bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-200/50">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-green-500/20 flex items-center justify-center shrink-0 shadow-sm">
-              <DollarIcon className="h-5 w-5 text-green-600" />
+            <div
+              className="h-10 w-10 rounded-lg bg-green-500/20 flex items-center justify-center shrink-0"
+              style={{ boxShadow: getIconShadow("#22c55e") }}
+            >
+              <InventoryValueIcon className="h-5 w-5 text-green-600" />
             </div>
-            <div>
+            <div className="min-w-0 flex-1 min-h-[2.5rem] flex flex-col justify-center">
               <p className="text-xs text-green-600/70 mb-0.5 font-medium">Inventory Value</p>
               <p className="text-2xl font-bold leading-none text-green-600">${totalValue.toFixed(0)}</p>
             </div>
@@ -128,15 +145,22 @@ export function Dashboard() {
             {recentParts.map((part) => {
               const filament = filaments.find((f) => f.id === part.filamentId);
               return (
-                <Card key={part.id} className="p-3">
-                  <div className="flex items-center gap-3">
+                <Card
+                  key={part.id}
+                  className="!p-[16px] gap-0 w-full max-w-none cursor-pointer hover:bg-accent/50 transition-colors"
+                  onClick={() => navigate(`/parts/${part.id}`)}
+                >
+                  <div className="flex items-center gap-3 w-full">
                     <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center shadow-md"
-                      style={{ backgroundColor: filament?.colorHex || "#gray" }}
+                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                      style={{
+                        backgroundColor: filament?.colorHex || "#9ca3af",
+                        boxShadow: getIconShadow(filament?.colorHex || "#9ca3af"),
+                      }}
                     >
-                      <PartsIcon className="w-5 h-5 text-white drop-shadow-md" />
+                      <PartsIcon active className="w-5 h-5 text-white drop-shadow-md" />
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 w-full">
                       <p className="font-medium text-sm truncate">{part.name}</p>
                       <p className="text-xs text-muted-foreground">
                         {new Date(part.printDate).toLocaleDateString()} • {part.weightUsed}g
@@ -151,8 +175,8 @@ export function Dashboard() {
             })}
           </div>
         ) : (
-          <Card className="p-6 text-center">
-            <PartsIcon className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
+          <Card className="!p-[16px] gap-0 text-center w-full max-w-none">
+            <RecentPrintsEmptyIcon className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">No prints yet</p>
           </Card>
         )}
@@ -175,30 +199,38 @@ export function Dashboard() {
             {mostUsedFilaments.map((filament) => (
               <Card
                 key={filament.id}
-                className="p-3 cursor-pointer hover:bg-accent/50 transition-colors"
+                className="!p-[16px] gap-0 w-full max-w-none cursor-pointer hover:bg-accent/50 transition-colors"
                 onClick={() => navigate(`/filaments/${filament.id}`)}
               >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center shadow-md"
-                    style={{ backgroundColor: filament.colorHex }}
-                  >
-                    <FilamentIcon className="w-5 h-5 text-white drop-shadow-md" />
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center gap-3 flex-1 min-w-0 w-full">
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
+                      style={{
+                        backgroundColor: filament.colorHex,
+                        boxShadow: getIconShadow(filament.colorHex),
+                      }}
+                    >
+                      <FilamentIcon active className="w-5 h-5 text-white drop-shadow-md" />
+                    </div>
+                    <div className="flex-1 min-w-0 w-full">
+                      <p className="font-medium text-sm truncate">{filament.manufacturer}</p>
+                      <div className="flex flex-wrap gap-2 mt-1 w-full">
+                        <MaterialChip>{filament.material}</MaterialChip>
+                        <MaterialChip variant="outlined">{filament.diameter}mm</MaterialChip>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm truncate">{filament.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {filamentUsage[filament.id]}g used
-                    </p>
-                  </div>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-xs text-muted-foreground shrink-0 ml-2">
+                    {filamentUsage[filament.id]}g used
+                  </span>
                 </div>
               </Card>
             ))}
           </div>
         ) : (
-          <Card className="p-6 text-center">
-            <TrendingUp className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
+          <Card className="!p-[16px] gap-0 text-center w-full max-w-none">
+            <MostUsedEmptyIcon className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">No usage data yet</p>
           </Card>
         )}

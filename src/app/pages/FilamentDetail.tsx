@@ -1,17 +1,22 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import { ArrowLeft, Edit2, Trash2, Weight, Ruler, Download, Printer } from "lucide-react";
+import { ArrowLeft, Ruler, Download, Printer } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Card } from "@/app/components/ui/card";
+import { getIconShadow } from "@/app/components/ui/utils";
 import { Progress } from "@/app/components/ui/progress";
 import { Badge } from "@/app/components/ui/badge";
+import { MaterialChip } from "@/app/components/figma/MaterialChip";
 import { useApp } from "@/app/context/AppContext";
 import { FilamentDialog } from "@/app/components/FilamentDialog";
 import { QRCodeSVG } from "qrcode.react";
 import { FilamentIcon } from "@/imports/filament-icon";
+import { DeleteIcon } from "@/imports/delete-icon";
+import { EditIcon } from "@/imports/edit-icon";
+import { WeightIcon } from "@/imports/weight-icon";
 import { PartsIcon } from "@/imports/parts-icon";
 import { BoxIcon } from "@/imports/box-icon";
-import { DollarIcon } from "@/imports/dollar-icon";
+import { InventoryValueIcon } from "@/imports/inventory-value-icon";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -184,7 +189,7 @@ export function FilamentDetail() {
       className="min-h-screen bg-background pb-20"
       style={{ paddingTop: "max(0.5rem, env(safe-area-inset-top))" }}
     >
-      <div className="p-4 space-y-4 max-w-md mx-auto">
+      <div className="pl-4 pr-8 pt-4 pb-4 space-y-4 max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between pt-2">
           <Button variant="ghost" onClick={() => navigate("/filaments")} size="sm">
@@ -197,7 +202,7 @@ export function FilamentDetail() {
               size="sm"
               onClick={() => setEditDialogOpen(true)}
             >
-              <Edit2 className="mr-2 h-4 w-4" />
+              <EditIcon className="mr-2 h-4 w-4" />
               Edit
             </Button>
             <Button
@@ -206,26 +211,26 @@ export function FilamentDetail() {
               className="text-destructive"
               onClick={() => setDeleteDialogOpen(true)}
             >
-              <Trash2 className="mr-2 h-4 w-4" />
+              <DeleteIcon className="mr-2 h-4 w-4" />
               Delete
             </Button>
           </div>
         </div>
 
         {/* Main Info Card - same layout as part detail: icon, title, badges below */}
-        <Card className="p-4">
-          <div className="flex items-center gap-4">
+        <Card className="!p-[16px] gap-0 w-full max-w-none">
+          <div className="flex items-center gap-4 w-full">
             <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg shrink-0"
-              style={{ backgroundColor: filament.colorHex }}
+              className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+              style={{ backgroundColor: filament.colorHex, boxShadow: getIconShadow(filament.colorHex) }}
             >
-              <FilamentIcon className="w-6 h-6 text-white drop-shadow-md" />
+              <FilamentIcon active className="w-6 h-6 text-white drop-shadow-md" />
             </div>
-            <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-bold truncate">{filament.manufacturer}</h1>
-              <div className="flex flex-wrap gap-2 mt-1">
-                <Badge variant="outline">{filament.material}</Badge>
-                <Badge variant="outline">{filament.diameter}mm</Badge>
+            <div className="flex-1 min-w-0 w-full">
+              <h1 className="text-lg font-semibold truncate">{filament.manufacturer}</h1>
+              <div className="flex flex-wrap gap-2 mt-1 w-full">
+                <MaterialChip>{filament.material}</MaterialChip>
+                <MaterialChip variant="outlined">{filament.diameter}mm</MaterialChip>
                 {isLow && <Badge variant="destructive">Low Stock</Badge>}
               </div>
             </div>
@@ -233,29 +238,27 @@ export function FilamentDetail() {
         </Card>
 
         {/* Filament Properties */}
-        <Card className="p-4">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Color</span>
-              <div className="flex items-center gap-2">
-                <div
-                  className="w-5 h-5 rounded border"
-                  style={{ backgroundColor: filament.colorHex }}
-                />
-                <span className="font-medium">{filament.color}</span>
-              </div>
+        <Card className="!p-[16px] gap-0 max-w-none">
+          <div className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-3 items-center">
+            <span className="text-muted-foreground">Color</span>
+            <div className="flex justify-end items-center gap-2 min-w-0">
+              <div
+                className="w-5 h-5 rounded border shrink-0"
+                style={{ backgroundColor: filament.colorHex }}
+              />
+              <span className="font-medium text-right">{filament.color}</span>
             </div>
             {filament.price && (
-              <div className="flex items-center justify-between">
+              <>
                 <span className="text-muted-foreground">Price</span>
-                <span className="font-medium">${filament.price.toFixed(2)}</span>
-              </div>
+                <span className="font-medium text-right">${filament.price.toFixed(2)}</span>
+              </>
             )}
           </div>
         </Card>
 
-        {/* Weight Status - p-4 to match top card alignment (same layout as part detail) */}
-        <Card className="p-4">
+        {/* Weight Status */}
+        <Card className="!p-[16px] gap-0 max-w-none">
           <h2 className="font-semibold mb-3">Weight Status</h2>
           <div className="space-y-3">
             <div>
@@ -265,34 +268,36 @@ export function FilamentDetail() {
                   {filament.remainingWeight}g / {filament.totalWeight}g
                 </span>
               </div>
-              <div className="relative h-3 w-full overflow-hidden rounded-full bg-primary/20">
-                <div 
-                  className={`h-full transition-all ${getProgressColor()}`}
+              <div className="relative h-2 w-full overflow-hidden rounded-full bg-[#E5E5E5]">
+                <div
+                  className={`h-full rounded-full transition-all ${getProgressColor()}`}
                   style={{ width: `${percentageRemaining}%` }}
                 />
               </div>
-              <p className="text-xs text-muted-foreground mt-1 text-right">
-                {percentageRemaining.toFixed(1)}% remaining
-              </p>
+              <div className="flex justify-end mt-1">
+                <p className="text-xs text-muted-foreground">
+                  {percentageRemaining.toFixed(1)}% remaining
+                </p>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3 pt-3 border-t">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-                  <Weight className="h-5 w-5 text-green-500" />
+              <div className="flex items-start gap-3">
+                <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
+                  <WeightIcon className="h-5 w-5 text-green-500" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs text-muted-foreground">Available</p>
-                  <p className="font-semibold">{filament.remainingWeight}g</p>
+                  <p className="font-semibold mt-0.5">{filament.remainingWeight}g</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                  <Weight className="h-5 w-5 text-orange-500" />
+              <div className="flex items-start gap-3">
+                <div className="h-10 w-10 rounded-lg bg-orange-500/10 flex items-center justify-center shrink-0">
+                  <WeightIcon className="h-5 w-5 text-orange-500" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-xs text-muted-foreground">Used</p>
-                  <p className="font-semibold">{weightUsed}g</p>
+                  <p className="font-semibold mt-0.5">{weightUsed}g</p>
                 </div>
               </div>
             </div>
@@ -300,38 +305,38 @@ export function FilamentDetail() {
         </Card>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-3">
-          <Card className="p-4">
+        <div className="grid grid-cols-2 gap-3 w-full items-stretch">
+          <Card className="!p-[16px] gap-0 w-full max-w-none flex flex-col justify-center">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <BoxIcon className="h-5 w-5 text-blue-500" />
+              <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                <PartsIcon active className="h-5 w-5 text-blue-500" />
               </div>
-              <div>
+              <div className="min-w-0 flex-1 min-h-[2.5rem] flex flex-col justify-center">
                 <p className="text-xs text-muted-foreground">Parts Printed</p>
-                <p className="text-xl font-bold">{partsWithFilament.length}</p>
+                <p className="text-xl font-bold mt-0.5">{partsWithFilament.length}</p>
               </div>
             </div>
           </Card>
 
-          {filament.price && (
-            <Card className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-                  <DollarIcon className="h-5 w-5 text-green-500" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Cost per gram</p>
-                  <p className="text-xl font-bold">
-                    ${(filament.price / filament.totalWeight).toFixed(3)}
-                  </p>
-                </div>
+          <Card className="!p-[16px] gap-0 w-full max-w-none flex flex-col justify-center">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
+                <InventoryValueIcon className="h-5 w-5 text-green-500" />
               </div>
-            </Card>
-          )}
+              <div className="min-w-0 flex-1 min-h-[2.5rem] flex flex-col justify-center">
+                <p className="text-xs text-muted-foreground">Cost per gram</p>
+                <p className="text-xl font-bold mt-0.5">
+                  {filament.price
+                    ? `$${(filament.price / filament.totalWeight).toFixed(3)}`
+                    : "—"}
+                </p>
+              </div>
+            </div>
+          </Card>
         </div>
 
         {/* QR Code Section - p-4 for alignment with top cards */}
-        <Card className="p-4">
+        <Card className="!p-[16px] gap-0 max-w-none">
           <h2 className="font-semibold mb-3">Spool Label</h2>
           <div className="flex flex-col items-center gap-4">
             <div className="bg-white p-4 rounded-lg">

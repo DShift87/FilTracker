@@ -212,6 +212,7 @@ export function PrintedPartDialog({
                     setFormData({ ...formData, weightUsed: e.target.value })
                   }
                   min="0"
+                  className="h-9 min-h-9"
                   required
                 />
               </div>
@@ -224,6 +225,7 @@ export function PrintedPartDialog({
                   onChange={(e) =>
                     setFormData({ ...formData, printDate: e.target.value })
                   }
+                  className="!h-9 min-h-9"
                   required
                 />
               </div>

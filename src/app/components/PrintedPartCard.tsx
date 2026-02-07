@@ -1,7 +1,6 @@
-import { Trash2, Edit2, Clock, Weight, DollarSign } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
 import { Card } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
+import { MaterialChip } from "@/app/components/figma/MaterialChip";
+import { getIconShadow } from "@/app/components/ui/utils";
 import { PrintedPart } from "@/app/context/AppContext";
 import { PartsIcon } from "@/imports/parts-icon";
 
@@ -39,29 +38,28 @@ export function PrintedPartCard({
 
   return (
     <Card
-      className="p-4 hover:shadow-lg transition-all active:scale-95 cursor-pointer"
+      className="!p-[16px] gap-0 w-full max-w-none hover:shadow-lg transition-all active:scale-95 cursor-pointer"
       onClick={() => onClick?.(part)}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div
-            className="w-12 h-12 rounded-lg flex items-center justify-center shadow-md"
-            style={{ backgroundColor: filamentColor || "#gray" }}
-          >
-            <PartsIcon className="w-6 h-6 text-white drop-shadow-md" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold truncate">{part.name}</h3>
-            <div className="flex gap-2 mt-1">
-              <Badge variant="outline" className="text-xs">
-                {formattedDate}
-              </Badge>
-            </div>
+      <div className="flex items-center w-full gap-4">
+        <div
+          className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
+          style={{
+            backgroundColor: filamentColor || "#9ca3af",
+            boxShadow: getIconShadow(filamentColor || "#9ca3af"),
+          }}
+        >
+          <PartsIcon active className="w-6 h-6 text-white drop-shadow-md" />
+        </div>
+        <div className="flex-1 min-w-0 w-full">
+          <h3 className="font-semibold truncate">{part.name}</h3>
+          <div className="flex flex-wrap gap-2 mt-1 w-full">
+            <MaterialChip>{formattedDate}</MaterialChip>
           </div>
         </div>
       </div>
 
-      <div className="space-y-2 mt-1.5">
+      <div className="space-y-2 w-full mt-3">
         <div className="flex justify-between items-baseline gap-3 text-sm">
           <span className="text-muted-foreground shrink-0">Weight Used</span>
           <span className="font-medium tabular-nums text-right min-w-[4rem]">{part.weightUsed}g</span>

@@ -1,15 +1,21 @@
 import { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router";
-import { ArrowLeft, Edit2, Trash2, Clock, Weight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Card } from "@/app/components/ui/card";
-import { Badge } from "@/app/components/ui/badge";
+import { getIconShadow } from "@/app/components/ui/utils";
+import { MaterialChip } from "@/app/components/figma/MaterialChip";
 import { useApp } from "@/app/context/AppContext";
 import { PrintedPartDialog } from "@/app/components/PrintedPartDialog";
 import { resizeImageToDataUrl } from "@/app/lib/imageUtils";
 import { toast } from "sonner";
 import { PartsIcon } from "@/imports/parts-icon";
-import { DollarIcon } from "@/imports/dollar-icon";
+import { InventoryValueIcon } from "@/imports/inventory-value-icon";
+import { PrintTimeIcon } from "@/imports/print-time-icon";
+import { DeleteIcon } from "@/imports/delete-icon";
+import { EditIcon } from "@/imports/edit-icon";
+import { WeightIcon } from "@/imports/weight-icon";
+import { AddImageIcon } from "@/imports/add-image-icon";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -92,39 +98,6 @@ export function PrintedPartDetail() {
       className="min-h-screen bg-background pb-20"
       style={{ paddingTop: "max(0.5rem, env(safe-area-inset-top))" }}
     >
-      {/* Part photo hidden for now - was banner */}
-      {false && (
-        <div className="w-full -mx-0 sm:max-w-[calc(100vw)]" data-section="part-photo">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="hidden"
-            onChange={handleImageUpload}
-            disabled={uploading}
-          />
-          {part.imageUrl ? (
-            <div className="relative w-full aspect-[21/9] bg-muted">
-              <img
-                src={part.imageUrl}
-                alt={part.name}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-              <div className="absolute bottom-2 right-2 flex gap-2">
-                <Button type="button" variant="secondary" size="sm" className="shadow-md" onClick={() => fileInputRef.current?.click()} disabled={uploading}>{uploading ? "…" : "Change photo"}</Button>
-                <Button type="button" variant="secondary" size="sm" className="shadow-md text-destructive hover:text-destructive" onClick={handleRemoveImage}>Remove</Button>
-              </div>
-            </div>
-          ) : (
-            <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="w-full aspect-[21/9] border-2 border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-2 text-muted-foreground hover:bg-muted/50 transition-colors">
-              <span className="text-4xl" aria-hidden>📷</span>
-              <span className="text-sm font-medium">Add print photo (banner)</span>
-            </button>
-          )}
-        </div>
-      )}
-
       <div className="p-4 space-y-4 max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between pt-2">
@@ -138,7 +111,7 @@ export function PrintedPartDetail() {
               size="sm"
               onClick={() => setEditDialogOpen(true)}
             >
-              <Edit2 className="mr-2 h-4 w-4" />
+              <EditIcon className="mr-2 h-4 w-4" />
               Edit
             </Button>
             <Button
@@ -147,50 +120,53 @@ export function PrintedPartDetail() {
               className="text-destructive"
               onClick={() => setDeleteDialogOpen(true)}
             >
-              <Trash2 className="mr-2 h-4 w-4" />
+              <DeleteIcon className="mr-2 h-4 w-4" />
               Delete
             </Button>
           </div>
         </div>
 
         {/* Main Info Card - icon, name, date only */}
-        <Card className="p-4">
+        <Card className="!p-[16px] gap-0 max-w-none">
           <div className="flex items-center gap-4">
             <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg shrink-0"
-              style={{ backgroundColor: filament?.colorHex || "#gray" }}
+              className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+              style={{
+                backgroundColor: filament?.colorHex || "#9ca3af",
+                boxShadow: getIconShadow(filament?.colorHex || "#9ca3af"),
+              }}
             >
-              <PartsIcon className="w-6 h-6 text-white drop-shadow-md" />
+              <PartsIcon active className="w-6 h-6 text-white drop-shadow-md" />
             </div>
             <div className="flex-1 min-w-0">
               <h1 className="text-xl font-bold truncate">{part.name}</h1>
-              <Badge variant="outline" className="mt-1">{formattedDate}</Badge>
+              <MaterialChip className="mt-1">{formattedDate}</MaterialChip>
             </div>
           </div>
         </Card>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-3">
-          <Card className="p-4">
+        <div className="grid grid-cols-2 gap-3 items-stretch">
+          <Card className="!p-[16px] gap-0 max-w-none flex flex-col justify-center">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <Weight className="h-5 w-5 text-blue-500" />
+              <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                <WeightIcon className="h-5 w-5 text-blue-500" />
               </div>
-              <div>
+              <div className="min-w-0 flex-1 min-h-[2.5rem] flex flex-col justify-center">
                 <p className="text-xs text-muted-foreground">Weight Used</p>
-                <p className="text-xl font-bold">{part.weightUsed}g</p>
+                <p className="text-xl font-bold mt-0.5">{part.weightUsed}g</p>
               </div>
             </div>
           </Card>
 
-          <Card className="p-4">
+          <Card className="!p-[16px] gap-0 max-w-none flex flex-col justify-center">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                <Clock className="h-5 w-5 text-purple-500" />
+              <div className="h-10 w-10 rounded-lg bg-purple-500/10 flex items-center justify-center shrink-0">
+                <PrintTimeIcon className="h-5 w-5 text-purple-500" />
               </div>
-              <div>
+              <div className="min-w-0 flex-1 min-h-[2.5rem] flex flex-col justify-center">
                 <p className="text-xs text-muted-foreground">Print Time</p>
-                <p className="text-xl font-bold">
+                <p className="text-xl font-bold mt-0.5">
                   {printHours > 0 ? `${printHours}h ` : ""}
                   {printMinutes}m
                 </p>
@@ -198,14 +174,14 @@ export function PrintedPartDetail() {
             </div>
           </Card>
 
-          <Card className="p-4 col-span-2">
+          <Card className="!p-[16px] gap-0 col-span-2 max-w-none flex flex-col justify-center">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-                <DollarIcon className="h-5 w-5 text-green-500" />
+              <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
+                <InventoryValueIcon className="h-5 w-5 text-green-500" />
               </div>
-              <div>
+              <div className="min-w-0 flex-1 min-h-[2.5rem] flex flex-col justify-center">
                 <p className="text-xs text-muted-foreground">Estimated Cost</p>
-                <p className="text-xl font-bold text-green-600">
+                <p className="text-xl font-bold text-green-600 mt-0.5">
                   {partCost !== null ? `$${partCost.toFixed(2)}` : "—"}
                 </p>
               </div>
@@ -215,12 +191,12 @@ export function PrintedPartDetail() {
 
         {/* Filament Details */}
         {filament && (
-          <Card className="p-4">
+          <Card className="!p-[16px] gap-0 max-w-none">
             <h2 className="font-semibold mb-3">Filament Details</h2>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Material</span>
-                <Badge variant="secondary">{filament.material}</Badge>
+                <MaterialChip>{filament.material}</MaterialChip>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Color</span>
@@ -246,11 +222,64 @@ export function PrintedPartDetail() {
 
         {/* Notes */}
         {part.notes && (
-          <Card className="p-4">
+          <Card className="!p-[16px] gap-0 max-w-none">
             <h2 className="font-semibold mb-2">Notes</h2>
             <p className="text-sm text-muted-foreground">{part.notes}</p>
           </Card>
         )}
+
+        {/* Part Image */}
+        <Card className="!p-[16px] gap-0 max-w-none">
+          <h2 className="font-semibold mb-3">Part Image</h2>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={handleImageUpload}
+            disabled={uploading}
+          />
+          {part.imageUrl ? (
+            <div className="rounded-lg overflow-hidden bg-muted border">
+              <img
+                src={part.imageUrl}
+                alt={part.name}
+                className="w-full aspect-video object-cover"
+              />
+              <div className="flex gap-2 p-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                >
+                  {uploading ? "Uploading…" : "Change image"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="text-destructive"
+                  onClick={handleRemoveImage}
+                >
+                  Remove
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="w-full rounded-lg border-2 border-dashed border-muted-foreground/30 aspect-video flex flex-col items-center justify-center gap-3 text-muted-foreground hover:bg-muted/50 transition-colors"
+            >
+              <AddImageIcon className="w-12 h-12" />
+              <span className="text-sm font-medium">{uploading ? "Uploading…" : "Add part image"}</span>
+            </button>
+          )}
+        </Card>
       </div>
 
       {/* Edit Dialog */}

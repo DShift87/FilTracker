@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { Package, X } from "lucide-react";
+import { Package } from "lucide-react";
+import { motion } from "motion/react";
 import { useNavigate, useLocation } from "react-router";
 import { Button } from "@/app/components/ui/button";
 import { FilamentCard } from "@/app/components/FilamentCard";
@@ -13,6 +14,12 @@ import { SearchIcon } from "@/imports/search-icon";
 import { QrScannerIcon } from "@/imports/qr-scanner-icon";
 import { NfcReaderIcon } from "@/imports/nfc-reader-icon";
 import { FilterIcon } from "@/imports/filter-icon";
+import { AllFilamentsIcon } from "@/imports/all-filaments-icon";
+import { AllFilamentsIconOutlined } from "@/imports/all-filaments-icon-outlined";
+import { LowStockIcon } from "@/imports/low-stock-icon";
+import { LowStockIconOutlined } from "@/imports/low-stock-icon-outlined";
+import { OutOfStockIcon } from "@/imports/out-of-stock-icon";
+import { OutOfStockIconOutlined } from "@/imports/out-of-stock-icon-outlined";
 import { Input } from "@/app/components/ui/input";
 
 export function Filaments() {
@@ -26,6 +33,7 @@ export function Filaments() {
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
   const [selectedFilamentForQR, setSelectedFilamentForQR] = useState<Filament | null>(null);
   const [qrScannerOpen, setQrScannerOpen] = useState(false);
+  const [stockFilter, setStockFilter] = useState<"all" | "low" | "out">("all");
   const { registerAddHandler, unregisterAddHandler } = useAddAction();
 
   const handleSaveFilament = (filamentData: Omit<Filament, "id"> | Filament) => {
@@ -57,8 +65,13 @@ export function Filaments() {
   }, [registerAddHandler, unregisterAddHandler, handleAddNew]);
 
   useEffect(() => {
-    if ((location.state as { openAdd?: boolean })?.openAdd) {
+    const state = location.state as { openAdd?: boolean; tab?: "all" | "low" | "out" } | null;
+    if (state?.openAdd) {
       handleAddNew();
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+    if (state?.tab && ["all", "low", "out"].includes(state.tab)) {
+      setStockFilter(state.tab);
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location.state, location.pathname, handleAddNew, navigate]);
@@ -70,8 +83,17 @@ export function Filaments() {
     }
   };
 
-  // Filter filaments based on search query
+  // Filter filaments based on search query and stock tab
   const filteredFilaments = filaments.filter((filament) => {
+    // Stock filter
+    const percentageRemaining = (filament.remainingWeight / filament.totalWeight) * 100;
+    const isOutOfStock = filament.remainingWeight === 0;
+    const isLowStock = percentageRemaining < 25 && !isOutOfStock;
+
+    if (stockFilter === "low" && !isLowStock) return false;
+    if (stockFilter === "out" && !isOutOfStock) return false;
+
+    // Search filter
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
     return (
@@ -81,6 +103,12 @@ export function Filaments() {
       filament.manufacturer.toLowerCase().includes(query)
     );
   });
+
+  const lowStockCount = filaments.filter((f) => {
+    const pct = (f.remainingWeight / f.totalWeight) * 100;
+    return pct < 25 && f.remainingWeight > 0;
+  }).length;
+  const outOfStockCount = filaments.filter((f) => f.remainingWeight === 0).length;
 
   return (
     <div className="p-4 space-y-4 max-w-md mx-auto pb-24">
@@ -136,6 +164,63 @@ export function Filaments() {
         )}
       </div>
 
+      {/* Stock Tabs - navbar style pill */}
+      <div className="bg-white flex gap-[8px] items-center p-[4px] rounded-[999px] w-full">
+        {(
+          [
+            { value: "all" as const, label: "All", count: filaments.length, Icon: AllFilamentsIcon },
+            { value: "low" as const, label: "Low Stock", count: lowStockCount, Icon: LowStockIcon },
+            { value: "out" as const, label: "Out of Stock", count: outOfStockCount, Icon: OutOfStockIcon },
+          ] as const
+        ).map((tab) => {
+          const isActive = stockFilter === tab.value;
+          return (
+            <button
+              key={tab.value}
+              type="button"
+              onClick={() => setStockFilter(tab.value)}
+              className={`relative flex flex-1 min-w-0 items-center justify-center gap-1.5 py-2 px-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
+                isActive ? "text-[#F26D00]" : "text-[#7A7A7A] hover:text-gray-900"
+              }`}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="stock-tab-indicator"
+                  className="absolute inset-0 rounded-full z-0 bg-orange-100"
+                  transition={{
+                    type: "spring",
+                    stiffness: 400,
+                    damping: 30,
+                  }}
+                />
+              )}
+              <span className="relative z-[1] flex items-center gap-1.5 whitespace-nowrap">
+                {tab.value === "all" ? (
+                  isActive ? (
+                    <AllFilamentsIcon className="h-4 w-4 shrink-0" />
+                  ) : (
+                    <AllFilamentsIconOutlined className="h-4 w-4 shrink-0" />
+                  )
+                ) : tab.value === "low" ? (
+                  isActive ? (
+                    <LowStockIcon className="h-4 w-4 shrink-0" />
+                  ) : (
+                    <LowStockIconOutlined className="h-4 w-4 shrink-0" />
+                  )
+                ) : (
+                  isActive ? (
+                    <OutOfStockIcon className="h-4 w-4 shrink-0" />
+                  ) : (
+                    <OutOfStockIconOutlined className="h-4 w-4 shrink-0" />
+                  )
+                )}
+                {tab.label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
       {/* Filament List */}
       {filteredFilaments.length > 0 ? (
         <div className="space-y-3 pb-4">
@@ -149,16 +234,32 @@ export function Filaments() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <Package className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+          {!searchQuery && stockFilter === "out" ? (
+            <OutOfStockIconOutlined className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+          ) : !searchQuery && stockFilter === "low" ? (
+            <LowStockIconOutlined className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+          ) : !searchQuery && stockFilter === "all" ? (
+            <AllFilamentsIconOutlined className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+          ) : (
+            <Package className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+          )}
           <h3 className="font-semibold mb-2">
-            {searchQuery ? "No filaments found" : "No filaments found"}
+            {searchQuery
+              ? "No filaments found"
+              : stockFilter === "low"
+                ? "No low stock spools"
+                : stockFilter === "out"
+                  ? "No out of stock spools"
+                  : "No filaments found"}
           </h3>
           <p className="text-sm text-muted-foreground mb-4">
             {searchQuery
               ? "Try adjusting your search terms."
-              : "Get started by adding your first filament spool."}
+              : stockFilter !== "all"
+                ? "All your filaments are in good shape."
+                : "Get started by adding your first filament spool."}
           </p>
-          {!searchQuery && (
+          {!searchQuery && stockFilter === "all" && (
             <Button onClick={handleAddNew}>
               <PlusIcon className="mr-2 h-4 w-4" />
               Add Filament
