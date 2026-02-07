@@ -12,6 +12,7 @@ import { InventoryValueIcon } from "@/imports/inventory-value-icon";
 import { LowStockIcon } from "@/imports/low-stock-icon";
 import { RecentPrintsEmptyIcon } from "@/imports/recent-prints-empty-icon";
 import { MostUsedEmptyIcon } from "@/imports/most-used-empty-icon";
+import { CloudIcon } from "@/imports/cloud-icon";
 
 export function Dashboard() {
   const { filaments, printedParts, isCloudSync, isCloudLoading } = useApp();
@@ -55,8 +56,15 @@ export function Dashboard() {
         <div className="flex items-center justify-between gap-2">
           <h1 className="text-3xl font-bold mb-1">Dashboard +</h1>
           {isCloudSync && (
-            <span className="text-xs text-muted-foreground shrink-0">
-              {isCloudLoading ? "Syncing…" : "☁️ Cloud"}
+            <span className="text-xs text-muted-foreground shrink-0 flex items-center gap-1">
+              {isCloudLoading ? (
+                "Syncing…"
+              ) : (
+                <>
+                  <CloudIcon className="h-4 w-4" />
+                  Cloud
+                </>
+              )}
             </span>
           )}
         </div>

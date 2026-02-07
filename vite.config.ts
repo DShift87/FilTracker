@@ -5,9 +5,9 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 
 const isProd = process.env.NODE_ENV === 'production'
-// Production: use GitHub repo name (FilTracker) so deploy works at github.io/FilTracker/
+// VITE_APP_BASE=/ for Firebase Hosting; otherwise production uses GitHub Pages path
 // Dev: root so app is at http://localhost:5173/
-const base = isProd ? '/FilTracker/' : '/'
+const base = process.env.VITE_APP_BASE ?? (isProd ? '/FilTracker/' : '/')
 
 // Plugin: serve correct manifest (start_url matches base) for dev and build
 function manifestPlugin() {
@@ -44,11 +44,18 @@ function manifestPlugin() {
         const manifestPath = path.resolve(__dirname, 'public/3d-printer-tracker/manifest.webmanifest')
         const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'))
         manifest.start_url = base
-        const distDir = path.resolve(__dirname, 'dist', isProd ? 'FilTracker' : '3d-printer-tracker')
+        const forFirebase = !!process.env.VITE_APP_BASE
+        const distDir = path.resolve(__dirname, 'dist', forFirebase ? '' : (isProd ? 'FilTracker' : '3d-printer-tracker'))
         fs.mkdirSync(distDir, { recursive: true })
+        if (forFirebase) {
+          manifest.icons = [
+            { src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+            { src: '/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+            { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          ]
+        }
         fs.writeFileSync(path.join(distDir, 'manifest.webmanifest'), JSON.stringify(manifest, null, 2))
-        // Copy icons to same folder for production (FilTracker)
-        if (isProd) {
+        if (isProd || forFirebase) {
           const icons = ['icon.svg', 'icon-192.png', 'icon-512.png']
           const srcDir = path.resolve(__dirname, 'public/3d-printer-tracker')
           icons.forEach((name) => {
