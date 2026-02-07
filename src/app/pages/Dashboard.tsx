@@ -53,7 +53,7 @@ export function Dashboard() {
       {/* Header */}
       <div className="pt-2">
         <div className="flex items-center justify-between gap-2">
-          <h1 className="text-2xl font-bold mb-1">Dashboard +</h1>
+          <h1 className="text-3xl font-bold mb-1">Dashboard +</h1>
           {isCloudSync && (
             <span className="text-xs text-muted-foreground shrink-0">
               {isCloudLoading ? "Syncing…" : "☁️ Cloud"}

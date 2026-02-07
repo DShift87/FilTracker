@@ -116,7 +116,7 @@ export function PrintedParts() {
       {/* Header */}
       <div className="pt-2 flex items-start justify-between gap-3">
         <div className="flex-shrink-0">
-          <h1 className="text-2xl font-bold">Printed Parts</h1>
+          <h1 className="text-3xl font-bold">Printed Parts</h1>
           <p className="text-sm text-muted-foreground">
             {printedParts.length} part{printedParts.length !== 1 ? "s" : ""} • {totalWeight}g
             used • {totalHours}h

@@ -140,7 +140,7 @@ export function FilamentDialog({
     };
 
     if (editFilament) {
-      onSave({ ...filamentData, id: editFilament.id });
+      onSave({ ...filamentData, id: editFilament.id, favorite: editFilament.favorite });
     } else {
       onSave(filamentData);
     }

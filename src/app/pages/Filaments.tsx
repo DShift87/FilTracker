@@ -115,7 +115,7 @@ export function Filaments() {
       {/* Header */}
       <div className="pt-2 flex items-start justify-between gap-3">
         <div className="flex-shrink-0">
-          <h1 className="text-2xl font-bold">Filaments</h1>
+          <h1 className="text-3xl font-bold">Filaments</h1>
           <p className="text-sm text-muted-foreground">
             {filaments.length} spool{filaments.length !== 1 ? "s" : ""}
           </p>
@@ -229,6 +229,7 @@ export function Filaments() {
               key={filament.id}
               filament={filament}
               onClick={handleFilamentClick}
+              onToggleFavorite={(f) => updateFilament({ ...f, favorite: !f.favorite })}
             />
           ))}
         </div>

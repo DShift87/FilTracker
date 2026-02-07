@@ -1,8 +1,10 @@
 import { useApp } from "@/app/context/AppContext";
+import type { Filament } from "@/app/context/AppContext";
 import { Card } from "@/app/components/ui/card";
 import { MaterialChip } from "@/app/components/figma/MaterialChip";
 import { MostUsedEmptyIcon } from "@/imports/most-used-empty-icon";
 import { AllFilamentsIcon } from "@/imports/all-filaments-icon";
+import { FavoriteIcon } from "@/imports/favorite-icon";
 import { Progress } from "@/app/components/ui/progress";
 
 type StatItem = { label: string; weight: number; colorHex?: string };
@@ -50,9 +52,9 @@ function StatSection({
   const max = Math.max(...items.map((i) => i.weight), 1);
 
   return (
-    <div>
+    <div className="w-full">
       <h2 className="font-semibold mb-3">{title}</h2>
-      <Card className="p-4">
+      <Card className="p-4 w-full max-w-none">
         {items.length === 0 ? (
           <p className="text-sm text-muted-foreground">{emptyMessage}</p>
         ) : (
@@ -60,7 +62,7 @@ function StatSection({
             {items.map((item, i) => (
               <li key={`${item.label}-${i}`} className="flex flex-col gap-1">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="flex items-center gap-2 min-w-0">
+                  <span className="flex items-center gap-2 min-w-0 flex-1">
                     {item.colorHex && useCircleIcon ? (
                       <span className="shrink-0" style={{ color: item.colorHex }}>
                         <AllFilamentsIcon className="h-4 w-4" />
@@ -71,15 +73,16 @@ function StatSection({
                         style={{ backgroundColor: item.colorHex }}
                       />
                     ) : null}
-                    {useMaterialChip ? (
-                      <MaterialChip className="shrink-0">{item.label}</MaterialChip>
-                    ) : (
-                      <span className="text-sm font-medium truncate">{item.label}</span>
-                    )}
+                    <span className="text-sm font-medium truncate">
+                      {useMaterialChip ? item.label : item.label}
+                    </span>
                   </span>
                   <span className="text-sm text-muted-foreground shrink-0">
                     {item.weight}g
                   </span>
+                  {useMaterialChip && (
+                    <MaterialChip className="shrink-0">{item.label}</MaterialChip>
+                  )}
                 </div>
                 <Progress value={(item.weight / max) * 100} className="h-1.5" indicatorClassName="bg-[#F26D00]" />
               </li>
@@ -91,8 +94,39 @@ function StatSection({
   );
 }
 
+function FavoriteFilamentsSection({ filaments }: { filaments: Filament[] }) {
+  const favorites = filaments.filter((f) => f.favorite);
+
+  return (
+    <div className="w-full">
+      <h2 className="font-semibold mb-3">Favorite filaments</h2>
+      <Card className="p-4 w-full max-w-none">
+        {favorites.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No favorites yet. Tap the star on a filament in the Filaments tab to add it here.
+          </p>
+        ) : (
+          <ul className="space-y-3">
+            {favorites.map((filament) => (
+              <li key={filament.id} className="flex items-center gap-2 w-full">
+                <span className="shrink-0 text-[#F26D00]">
+                  <FavoriteIcon active className="h-5 w-5" />
+                </span>
+                <span className="text-sm font-medium truncate min-w-0 flex-1">{filament.manufacturer}</span>
+                <MaterialChip className="shrink-0 ml-auto">{filament.material}</MaterialChip>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+    </div>
+  );
+}
+
 export function Stats() {
   const { filaments, printedParts } = useApp();
+
+  const favoriteFilaments = filaments.filter((f) => f.favorite);
 
   const mostUsedBrands = aggregateBy(
     printedParts,
@@ -117,6 +151,7 @@ export function Stats() {
   ).slice(0, 7);
 
   const hasAnyStats =
+    favoriteFilaments.length > 0 ||
     mostUsedBrands.length > 0 ||
     mostUsedColors.length > 0 ||
     mostUsedMaterials.length > 0;
@@ -124,14 +159,15 @@ export function Stats() {
   return (
     <div className="p-4 space-y-6 max-w-md mx-auto">
       <div className="pt-2">
-        <h1 className="text-2xl font-bold mb-1">Stats</h1>
+        <h1 className="text-3xl font-bold mb-1">Stats</h1>
         <p className="text-sm text-muted-foreground">
-          Most used brands, colors, and materials
+          Your favorites and most used brands, colors, and materials
         </p>
       </div>
 
       {hasAnyStats ? (
-        <div className="space-y-6">
+        <div className="space-y-6 w-full">
+          <FavoriteFilamentsSection filaments={filaments} />
           <StatSection
             title="Most used brands"
             items={mostUsedBrands}

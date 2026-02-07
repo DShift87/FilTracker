@@ -14,6 +14,7 @@ export interface Filament {
   manufacturer: string;
   diameter: number;
   price?: number;
+  favorite?: boolean;
 }
 
 export interface PrintedPart {
@@ -146,6 +147,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const newFilament: Filament = {
       ...filamentData,
       id: Date.now().toString(),
+      favorite: filamentData.favorite ?? false,
     };
     const next = [...filaments, newFilament];
     setFilaments(next);
