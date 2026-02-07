@@ -67,17 +67,17 @@ export function Dashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-3 w-full items-stretch">
-        <Card className="!p-[16px] gap-0 w-full max-w-none flex flex-col justify-center cursor-pointer hover:bg-accent/50 transition-colors bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-orange-200/50" onClick={() => navigate("/filaments")}>
+        <Card className="!p-[16px] gap-0 w-full max-w-none flex flex-col justify-center cursor-pointer hover:bg-accent/50 transition-colors bg-gradient-to-br from-[#F26D00]/10 to-[#F26D00]/5 border-[#F26D00]/20" onClick={() => navigate("/filaments")}>
           <div className="flex items-center gap-3">
             <div
-              className="h-10 w-10 rounded-lg bg-orange-500/20 flex items-center justify-center shrink-0"
-              style={{ boxShadow: getIconShadow("#f97316") }}
+              className="h-10 w-10 rounded-lg flex items-center justify-center shrink-0"
+              style={{ backgroundColor: "rgba(242, 109, 0, 0.2)", boxShadow: getIconShadow("#F26D00") }}
             >
-              <FilamentIcon active className="h-5 w-5 text-orange-600" />
+              <FilamentIcon active className="h-5 w-5 text-[#F26D00]" />
             </div>
             <div className="min-w-0 flex-1 min-h-[2.5rem] flex flex-col justify-center">
-              <p className="text-xs text-orange-600/70 mb-0.5 font-medium">Filament Spools</p>
-              <p className="text-2xl font-bold leading-none text-orange-600">{totalSpools}</p>
+              <p className="text-xs font-medium mb-0.5 text-[#F26D00]/70">Filament Spools</p>
+              <p className="text-2xl font-bold leading-none text-[#F26D00]">{totalSpools}</p>
             </div>
           </div>
         </Card>
