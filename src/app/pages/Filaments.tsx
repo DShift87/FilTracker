@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
 import { Package } from "lucide-react";
-import { motion } from "motion/react";
 import { useNavigate, useLocation } from "react-router";
 import { Button } from "@/app/components/ui/button";
 import { FilamentCard } from "@/app/components/FilamentCard";
@@ -164,8 +163,8 @@ export function Filaments() {
         )}
       </div>
 
-      {/* Stock Tabs - navbar style pill */}
-      <div className="bg-white flex gap-[8px] items-center p-[4px] rounded-[999px] w-full">
+      {/* Stock Tabs - same style as Printed Parts tabs */}
+      <div className="bg-white flex gap-[8px] items-center p-[4px] rounded-[999px] w-full shadow-[0_-2px_10px_rgba(0,0,0,0.06),0_2px_10px_rgba(0,0,0,0.06)]">
         {(
           [
             { value: "all" as const, label: "All", count: filaments.length, Icon: AllFilamentsIcon },
@@ -179,39 +178,31 @@ export function Filaments() {
               key={tab.value}
               type="button"
               onClick={() => setStockFilter(tab.value)}
-              className={`relative flex flex-1 min-w-0 items-center justify-center gap-1.5 py-2 px-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
+              className={`relative flex-1 min-w-0 py-2 px-3 rounded-full text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
                 isActive ? "text-[#F26D00]" : "text-[#7A7A7A] hover:text-gray-900"
               }`}
             >
               {isActive && (
-                <motion.div
-                  layoutId="stock-tab-indicator"
-                  className="absolute inset-0 rounded-full z-0 bg-orange-100"
-                  transition={{
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 30,
-                  }}
-                />
+                <span className="absolute inset-0 rounded-full bg-orange-100 z-0" />
               )}
-              <span className="relative z-[1] flex items-center gap-1.5 whitespace-nowrap">
+              <span className="relative z-[1] flex items-center gap-1.5 shrink-0">
                 {tab.value === "all" ? (
                   isActive ? (
-                    <AllFilamentsIcon className="h-4 w-4 shrink-0" />
+                    <AllFilamentsIcon className="h-4 w-4" />
                   ) : (
-                    <AllFilamentsIconOutlined className="h-4 w-4 shrink-0" />
+                    <AllFilamentsIconOutlined className="h-4 w-4" />
                   )
                 ) : tab.value === "low" ? (
                   isActive ? (
-                    <LowStockIcon className="h-4 w-4 shrink-0" />
+                    <LowStockIcon className="h-4 w-4" />
                   ) : (
-                    <LowStockIconOutlined className="h-4 w-4 shrink-0" />
+                    <LowStockIconOutlined className="h-4 w-4" />
                   )
                 ) : (
                   isActive ? (
-                    <OutOfStockIcon className="h-4 w-4 shrink-0" />
+                    <OutOfStockIcon className="h-4 w-4" />
                   ) : (
-                    <OutOfStockIconOutlined className="h-4 w-4 shrink-0" />
+                    <OutOfStockIconOutlined className="h-4 w-4" />
                   )
                 )}
                 {tab.label}

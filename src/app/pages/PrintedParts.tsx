@@ -2,16 +2,21 @@ import { useState, useEffect, useCallback } from "react";
 import { X } from "lucide-react";
 import { useNavigate, useLocation } from "react-router";
 import { Button } from "@/app/components/ui/button";
+import { Card } from "@/app/components/ui/card";
 import { PrintedPartCard } from "@/app/components/PrintedPartCard";
 import { PrintedPartDialog } from "@/app/components/PrintedPartDialog";
+import { ProjectDialog } from "@/app/components/ProjectDialog";
 import { useAddAction } from "@/app/context/AddActionContext";
-import { useApp, PrintedPart } from "@/app/context/AppContext";
+import { useApp, PrintedPart, Project } from "@/app/context/AppContext";
 import { PlusIcon } from "@/imports/plus-icon";
 import { SearchIcon } from "@/imports/search-icon";
+import { AllPartsTabIcon } from "@/imports/all-parts-tab-icon";
+import { ProjectsTabIcon } from "@/imports/projects-tab-icon";
 import { QrScannerIcon } from "@/imports/qr-scanner-icon";
 import { NfcReaderIcon } from "@/imports/nfc-reader-icon";
 import { Input } from "@/app/components/ui/input";
 import { RecentPrintsEmptyIcon } from "@/imports/recent-prints-empty-icon";
+import { ProjectsEmptyIcon } from "@/imports/projects-empty-icon";
 import {
   Select,
   SelectContent,
@@ -20,13 +25,27 @@ import {
   SelectValue,
 } from "@/app/components/ui/select";
 
+type PartsView = "all" | "projects";
+
 export function PrintedParts() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { printedParts, filaments, addPrintedPart, updatePrintedPart, deletePrintedPart } =
-    useApp();
+  const {
+    printedParts,
+    filaments,
+    projects,
+    addPrintedPart,
+    updatePrintedPart,
+    deletePrintedPart,
+    addProject,
+    updateProject,
+    deleteProject,
+  } = useApp();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [projectDialogOpen, setProjectDialogOpen] = useState(false);
   const [editingPart, setEditingPart] = useState<PrintedPart | null>(null);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [view, setView] = useState<PartsView>("all");
   const [filterFilament, setFilterFilament] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("date");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -40,6 +59,16 @@ export function PrintedParts() {
     } else {
       addPrintedPart(partData);
     }
+  };
+
+  const handleSaveProject = (projectData: Omit<Project, "id"> | Project) => {
+    if ("id" in projectData) {
+      updateProject(projectData);
+      setEditingProject(null);
+    } else {
+      addProject(projectData);
+    }
+    setProjectDialogOpen(false);
   };
 
   const handleEditPart = (part: PrintedPart) => {
@@ -111,6 +140,9 @@ export function PrintedParts() {
   const totalTime = printedParts.reduce((sum, p) => sum + p.printTime, 0);
   const totalHours = Math.floor(totalTime / 60);
 
+  const partCountByProject = (projectId: string) =>
+    printedParts.filter((p) => p.projectId === projectId).length;
+
   return (
     <div className="p-4 space-y-4 max-w-md mx-auto pb-24">
       {/* Header */}
@@ -158,6 +190,87 @@ export function PrintedParts() {
         )}
       </div>
 
+      {/* View tabs: All Parts | Projects */}
+      <div className="bg-white flex gap-[8px] items-center p-[4px] rounded-[999px] w-full shadow-[0_-2px_10px_rgba(0,0,0,0.06),0_2px_10px_rgba(0,0,0,0.06)]">
+        <button
+          type="button"
+          onClick={() => setView("all")}
+          className={`relative flex-1 min-w-0 py-2 px-3 rounded-full text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
+            view === "all" ? "text-[#F26D00]" : "text-[#7A7A7A] hover:text-gray-900"
+          }`}
+        >
+          {view === "all" && (
+            <span className="absolute inset-0 rounded-full bg-orange-100 z-0" />
+          )}
+          <span className="relative z-[1] flex items-center gap-1.5 shrink-0">
+            <AllPartsTabIcon className="h-4 w-4" active={view === "all"} />
+            All parts
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setView("projects")}
+          className={`relative flex-1 min-w-0 py-2 px-3 rounded-full text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
+            view === "projects" ? "text-[#F26D00]" : "text-[#7A7A7A] hover:text-gray-900"
+          }`}
+        >
+          {view === "projects" && (
+            <span className="absolute inset-0 rounded-full bg-orange-100 z-0" />
+          )}
+          <span className="relative z-[1] flex items-center gap-1.5 shrink-0">
+            <ProjectsTabIcon className="h-4 w-4" active={view === "projects"} />
+            Projects
+          </span>
+        </button>
+      </div>
+
+      {view === "projects" ? (
+        <>
+          {projects.length > 0 ? (
+            <div className="space-y-3 pb-4">
+              {projects.map((project) => (
+                <Card
+                  key={project.id}
+                  className="!p-[16px] gap-0 w-full max-w-none hover:shadow-lg transition-all active:scale-95 cursor-pointer"
+                  onClick={() => navigate(`/parts/project/${project.id}`)}
+                >
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold truncate">{project.name}</h3>
+                    <span className="text-sm text-muted-foreground shrink-0">
+                      {partCountByProject(project.id)} part{partCountByProject(project.id) !== 1 ? "s" : ""}
+                    </span>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <ProjectsEmptyIcon className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+              <h3 className="font-semibold mb-2">No projects yet</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Create a project to group related parts together.
+              </p>
+              <Button onClick={() => { setEditingProject(null); setProjectDialogOpen(true); }}>
+                <PlusIcon className="mr-2 h-4 w-4" />
+                New project
+              </Button>
+            </div>
+          )}
+          {projects.length > 0 && (
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => { setEditingProject(null); setProjectDialogOpen(true); }}
+            >
+              <PlusIcon className="mr-2 h-4 w-4" />
+              New project
+            </Button>
+          )}
+        </>
+      ) : null}
+
+      {view === "all" && (
+      <>
       {false && (
         <div className="space-y-2">
           <Select value={filterFilament} onValueChange={setFilterFilament}>
@@ -229,18 +342,28 @@ export function PrintedParts() {
           </Button>
         </div>
       )}
+      </>
+      )}
 
-      {/* Dialog */}
+      {/* Part Dialog */}
       <PrintedPartDialog
         open={dialogOpen}
         onOpenChange={(open) => {
           setDialogOpen(open);
-          if (!open) {
-            setEditingPart(null);
-          }
+          if (!open) setEditingPart(null);
         }}
         onSave={handleSavePart}
         editPart={editingPart}
+      />
+      {/* Project Dialog */}
+      <ProjectDialog
+        open={projectDialogOpen}
+        onOpenChange={(open) => {
+          setProjectDialogOpen(open);
+          if (!open) setEditingProject(null);
+        }}
+        onSave={handleSaveProject}
+        editProject={editingProject}
       />
     </div>
   );

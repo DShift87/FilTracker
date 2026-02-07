@@ -17,6 +17,11 @@ export interface Filament {
   favorite?: boolean;
 }
 
+export interface Project {
+  id: string;
+  name: string;
+}
+
 export interface PrintedPart {
   id: string;
   name: string;
@@ -26,6 +31,7 @@ export interface PrintedPart {
   printDate: string;
   notes?: string;
   imageUrl?: string;
+  projectId?: string;
 }
 
 interface AppContextType {
@@ -33,6 +39,10 @@ interface AppContextType {
   addFilament: (filament: Omit<Filament, "id">) => Filament;
   updateFilament: (filament: Filament) => void;
   deleteFilament: (id: string) => void;
+  projects: Project[];
+  addProject: (project: Omit<Project, "id">) => Project;
+  updateProject: (project: Project) => void;
+  deleteProject: (id: string) => void;
   printedParts: PrintedPart[];
   addPrintedPart: (part: Omit<PrintedPart, "id">) => void;
   updatePrintedPart: (part: PrintedPart) => void;
@@ -107,6 +117,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [filaments, setFilaments] = useState<Filament[]>(
     useCloud ? [] : SEED_FILAMENTS
   );
+  const [projects, setProjects] = useState<Project[]>([]);
   const [printedParts, setPrintedParts] = useState<PrintedPart[]>(
     useCloud ? [] : SEED_PARTS
   );
@@ -121,6 +132,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (data) {
           setFilaments(data.filaments);
           setPrintedParts(data.printedParts);
+          setProjects(data.projects ?? []);
         }
       } finally {
         setIsCloudLoading(false);
@@ -128,6 +140,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       unsub = subscribeToCloudData((data) => {
         setFilaments(data.filaments);
         setPrintedParts(data.printedParts);
+        setProjects(data.projects ?? []);
       });
     })();
     return () => {
@@ -135,9 +148,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
   }, [useCloud]);
 
-  const persist = (f: Filament[], p: PrintedPart[]) => {
+  const persist = (f: Filament[], p: PrintedPart[], proj: Project[] = projects) => {
     if (!useCloud) return;
-    saveCloudData({ filaments: f, printedParts: p }).catch((e) => {
+    saveCloudData({ filaments: f, printedParts: p, projects: proj }).catch((e) => {
       console.error("Cloud save failed:", e);
       toast.error("Cloud sync failed. Check console or Firestore rules.");
     });
@@ -167,6 +180,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
     persist(next, printedParts);
   };
 
+  const addProject = (projectData: Omit<Project, "id">) => {
+    const newProject: Project = {
+      ...projectData,
+      id: Date.now().toString(),
+    };
+    const next = [...projects, newProject];
+    setProjects(next);
+    persist(filaments, printedParts, next);
+    return newProject;
+  };
+
+  const updateProject = (project: Project) => {
+    const next = projects.map((p) => (p.id === project.id ? project : p));
+    setProjects(next);
+    persist(filaments, printedParts, next);
+  };
+
+  const deleteProject = (id: string) => {
+    const nextProjects = projects.filter((p) => p.id !== id);
+    const nextParts = printedParts.map((p) =>
+      p.projectId === id ? { ...p, projectId: undefined } : p
+    );
+    setProjects(nextProjects);
+    setPrintedParts(nextParts);
+    persist(filaments, nextParts, nextProjects);
+  };
+
   const addPrintedPart = (partData: Omit<PrintedPart, "id">) => {
     const newPart: PrintedPart = {
       ...partData,
@@ -186,9 +226,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         f.id === updated.id ? updated : f
       );
       setFilaments(nextFilaments);
-      persist(nextFilaments, nextParts);
+      persist(nextFilaments, nextParts, projects);
     } else {
-      persist(filaments, nextParts);
+      persist(filaments, nextParts, projects);
     }
   };
 
@@ -224,7 +264,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
     setPrintedParts(nextParts);
     setFilaments(nextFilaments);
-    persist(nextFilaments, nextParts);
+    persist(nextFilaments, nextParts, projects);
   };
 
   const deletePrintedPart = (id: string) => {
@@ -243,7 +283,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
     setPrintedParts(nextParts);
     setFilaments(nextFilaments);
-    persist(nextFilaments, nextParts);
+    persist(nextFilaments, nextParts, projects);
   };
 
   return (
@@ -253,6 +293,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         addFilament,
         updateFilament,
         deleteFilament,
+        projects,
+        addProject,
+        updateProject,
+        deleteProject,
         printedParts,
         addPrintedPart,
         updatePrintedPart,

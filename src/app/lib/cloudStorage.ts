@@ -6,7 +6,7 @@ import {
   Unsubscribe,
 } from "firebase/firestore";
 import { getDb, isFirebaseConfigured } from "./firebase";
-import type { Filament } from "@/app/context/AppContext";
+import type { Filament, Project } from "@/app/context/AppContext";
 import type { PrintedPart } from "@/app/context/AppContext";
 
 const DATA_DOC_PATH = "appData/default";
@@ -14,6 +14,7 @@ const DATA_DOC_PATH = "appData/default";
 export interface CloudData {
   filaments: Filament[];
   printedParts: PrintedPart[];
+  projects: Project[];
 }
 
 export async function loadCloudData(): Promise<CloudData | null> {
@@ -21,11 +22,12 @@ export async function loadCloudData(): Promise<CloudData | null> {
   const db = getDb();
   const ref = doc(db, DATA_DOC_PATH);
   const snap = await getDoc(ref);
-  if (!snap.exists()) return { filaments: [], printedParts: [] };
+  if (!snap.exists()) return { filaments: [], printedParts: [], projects: [] };
   const data = snap.data() as CloudData;
   return {
     filaments: data.filaments ?? [],
     printedParts: data.printedParts ?? [],
+    projects: data.projects ?? [],
   };
 }
 
@@ -49,13 +51,14 @@ export function subscribeToCloudData(
   const ref = doc(db, DATA_DOC_PATH);
   return onSnapshot(ref, (snap) => {
     if (!snap.exists()) {
-      onData({ filaments: [], printedParts: [] });
+      onData({ filaments: [], printedParts: [], projects: [] });
       return;
     }
     const data = snap.data() as CloudData;
     onData({
       filaments: data.filaments ?? [],
       printedParts: data.printedParts ?? [],
+      projects: data.projects ?? [],
     });
   });
 }

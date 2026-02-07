@@ -27,6 +27,8 @@ interface PrintedPartDialogProps {
   onOpenChange: (open: boolean) => void;
   onSave: (part: Omit<PrintedPart, "id"> | PrintedPart) => void;
   editPart?: PrintedPart | null;
+  /** When adding a new part, preselect this project. */
+  defaultProjectId?: string;
 }
 
 export function PrintedPartDialog({
@@ -34,8 +36,9 @@ export function PrintedPartDialog({
   onOpenChange,
   onSave,
   editPart,
+  defaultProjectId,
 }: PrintedPartDialogProps) {
-  const { filaments } = useApp();
+  const { filaments, projects } = useApp();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
@@ -47,6 +50,7 @@ export function PrintedPartDialog({
     printDate: new Date().toISOString().split("T")[0],
     notes: "",
     imageUrl: "" as string,
+    projectId: "" as string,
   });
 
   useEffect(() => {
@@ -62,6 +66,7 @@ export function PrintedPartDialog({
         printDate: editPart.printDate,
         notes: editPart.notes || "",
         imageUrl: editPart.imageUrl || "",
+        projectId: editPart.projectId ?? "",
       });
     } else {
       setFormData({
@@ -73,9 +78,10 @@ export function PrintedPartDialog({
         printDate: new Date().toISOString().split("T")[0],
         notes: "",
         imageUrl: "",
+        projectId: defaultProjectId ?? "",
       });
     }
-  }, [editPart, open, filaments]);
+  }, [editPart, open, filaments, defaultProjectId]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -107,6 +113,7 @@ export function PrintedPartDialog({
       printDate: formData.printDate,
       notes: formData.notes || undefined,
       imageUrl: formData.imageUrl || undefined,
+      projectId: formData.projectId || undefined,
     };
 
     if (editPart) {
@@ -173,6 +180,30 @@ export function PrintedPartDialog({
                 required
               />
             </div>
+
+            {projects.length > 0 && (
+              <div className="space-y-2">
+                <Label htmlFor="project">Project (optional)</Label>
+                <Select
+                  value={formData.projectId || "none"}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, projectId: value === "none" ? "" : value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="None" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {projects.map((proj) => (
+                      <SelectItem key={proj.id} value={proj.id}>
+                        {proj.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="filament">Filament Used</Label>

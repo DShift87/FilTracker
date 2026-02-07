@@ -6,6 +6,7 @@ import { Filaments } from "@/app/pages/Filaments";
 import { FilamentDetail } from "@/app/pages/FilamentDetail";
 import { PrintedParts } from "@/app/pages/PrintedParts";
 import { PrintedPartDetail } from "@/app/pages/PrintedPartDetail";
+import { ProjectDetail } from "@/app/pages/ProjectDetail";
 import { Stats } from "@/app/pages/Stats";
 import { Button } from "@/app/components/ui/button";
 
@@ -88,6 +89,10 @@ export const router = createBrowserRouter(
               <PrintedParts />
             </MobileLayout>
           ),
+        },
+        {
+          path: "parts/project/:projectId",
+          Component: () => <ProjectDetail />,
         },
         {
           path: "parts/:id",
