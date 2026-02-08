@@ -144,7 +144,7 @@ export function PrintedPartDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto overflow-x-hidden w-full max-w-full" bottomSheet>
+      <DialogContent className="max-h-[85vh] overflow-y-auto overflow-x-hidden w-full max-w-full grid-cols-1" bottomSheet>
         <DialogHeader>
           <DialogTitle>
             {editPart ? "Edit Printed Part" : "Add Printed Part"}
@@ -155,8 +155,8 @@ export function PrintedPartDialog({
               : "Record a new 3D printed part."}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="w-full min-w-0">
-          <div className="grid w-full min-w-0 gap-4 py-4">
+        <form onSubmit={handleSubmit} className="w-full min-w-0 grid grid-cols-1">
+          <div className="grid grid-cols-1 w-full min-w-0 gap-3 py-2">
             {/* Part photo hidden for now */}
             {false && (
               <div className="space-y-2">
@@ -179,7 +179,7 @@ export function PrintedPartDialog({
               </div>
             )}
 
-            <div className="space-y-2 w-full min-w-0">
+            <div className="space-y-1.5 w-full min-w-0">
               <Label htmlFor="name">Part Name</Label>
               <Input
                 id="name"
@@ -193,7 +193,7 @@ export function PrintedPartDialog({
             </div>
 
             {projects.length > 0 && (
-              <div className="space-y-2 w-full min-w-0">
+              <div className="space-y-1.5 w-full min-w-0">
                 <Label htmlFor="project">Project (optional)</Label>
                 <Select
                   value={formData.projectId || "none"}
@@ -216,7 +216,7 @@ export function PrintedPartDialog({
               </div>
             )}
 
-            <div className="space-y-2 w-full min-w-0">
+            <div className="space-y-1.5 w-full min-w-0">
               <Label htmlFor="filament">Filament Used</Label>
               <Select
                 value={formData.filamentId}
@@ -243,40 +243,44 @@ export function PrintedPartDialog({
               </Select>
             </div>
 
-            <div className="grid grid-cols-[1fr_1fr] gap-4 w-full min-w-0">
-              <div className="space-y-2 min-w-0">
+            <div className="flex flex-row gap-3 w-full min-w-0">
+              <div className="flex-1 min-w-0 flex flex-col gap-1.5">
                 <Label htmlFor="weightUsed">Weight Used (g)</Label>
-                <Input
-                  id="weightUsed"
-                  type="number"
-                  value={formData.weightUsed}
-                  onChange={(e) =>
-                    setFormData({ ...formData, weightUsed: e.target.value })
-                  }
-                  min="0"
-                  className="w-full h-9 min-h-9"
-                  required
-                />
+                <div className="h-[36px] w-full min-w-0 overflow-hidden rounded-md border border-input bg-input-background [&_input]:h-full [&_input]:min-h-full [&_input]:max-h-full [&_input]:border-0 [&_input]:rounded-md">
+                  <Input
+                    id="weightUsed"
+                    type="number"
+                    value={formData.weightUsed}
+                    onChange={(e) =>
+                      setFormData({ ...formData, weightUsed: e.target.value })
+                    }
+                    min="0"
+                    className="w-full min-w-0 h-full min-h-full max-h-full border-0 rounded-md"
+                    required
+                  />
+                </div>
               </div>
-              <div className="space-y-2 min-w-0">
+              <div className="flex-1 min-w-0 flex flex-col gap-1.5">
                 <Label htmlFor="printDate">Print Date</Label>
-                <Input
-                  id="printDate"
-                  type="date"
-                  value={formData.printDate}
-                  onChange={(e) =>
-                    setFormData({ ...formData, printDate: e.target.value })
-                  }
-                  className="w-full h-9 min-h-9"
-                  required
-                />
+                <div className="h-[36px] w-full min-w-0 overflow-hidden rounded-md border border-input bg-input-background [&_input]:h-full [&_input]:min-h-full [&_input]:max-h-full [&_input]:border-0 [&_input]:rounded-md [&_input::-webkit-datetime-edit]:!py-0 [&_input::-webkit-datetime-edit]:!leading-[36px] [&_input::-webkit-datetime-edit-fields-wrapper]:!py-0">
+                  <Input
+                    id="printDate"
+                    type="date"
+                    value={formData.printDate}
+                    onChange={(e) =>
+                      setFormData({ ...formData, printDate: e.target.value })
+                    }
+                    className="w-full min-w-0 h-full min-h-full max-h-full border-0 rounded-md text-base md:text-sm"
+                    required
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="space-y-2 w-full min-w-0">
+            <div className="space-y-1.5 w-full min-w-0">
               <Label>Print Time</Label>
-              <div className="grid grid-cols-[1fr_1fr] gap-2 w-full min-w-0">
-                <div className="min-w-0">
+              <div className="grid grid-cols-[1fr_1fr] gap-3 w-full min-w-0">
+                <div className="min-w-0 w-full h-[36px] overflow-hidden rounded-md border border-input bg-input-background [&_input]:h-full [&_input]:min-h-full [&_input]:max-h-full [&_input]:border-0 [&_input]:rounded-md">
                   <Input
                     type="number"
                     value={formData.printTimeHours}
@@ -288,10 +292,10 @@ export function PrintedPartDialog({
                     }
                     placeholder="Hours"
                     min="0"
-                    className="w-full h-9 min-h-9"
+                    className="w-full min-w-0 h-full min-h-full max-h-full border-0 rounded-md"
                   />
                 </div>
-                <div className="min-w-0">
+                <div className="min-w-0 w-full h-[36px] overflow-hidden rounded-md border border-input bg-input-background [&_input]:h-full [&_input]:min-h-full [&_input]:max-h-full [&_input]:border-0 [&_input]:rounded-md">
                   <Input
                     type="number"
                     value={formData.printTimeMinutes}
@@ -304,13 +308,13 @@ export function PrintedPartDialog({
                     placeholder="Minutes"
                     min="0"
                     max="59"
-                    className="w-full h-9 min-h-9"
+                    className="w-full min-w-0 h-full min-h-full max-h-full border-0 rounded-md"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="space-y-2 w-full min-w-0">
+            <div className="space-y-1.5 w-full min-w-0">
               <Label htmlFor="notes">Notes (Optional)</Label>
               <Textarea
                 id="notes"
@@ -320,6 +324,7 @@ export function PrintedPartDialog({
                 }
                 placeholder="Add any notes about the print..."
                 rows={3}
+                className="w-full min-w-0"
               />
             </div>
 
@@ -340,15 +345,16 @@ export function PrintedPartDialog({
               </div>
             )}
           </div>
-          <DialogFooter>
+          <DialogFooter className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              className="w-full"
             >
               Cancel
             </Button>
-            <Button type="submit">{editPart ? "Update" : "Add"} Part</Button>
+            <Button type="submit" className="w-full">{editPart ? "Update" : "Add"} Part</Button>
           </DialogFooter>
         </form>
       </DialogContent>
