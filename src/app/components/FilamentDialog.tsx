@@ -167,8 +167,8 @@ export function FilamentDialog({
 
   const formBody = (
     <>
-      <div className="grid gap-4 py-4">
-        <div className="space-y-2">
+      <div className="grid w-full min-w-0 gap-4 py-4">
+        <div className="space-y-2 w-full min-w-0">
           <Label htmlFor="manufacturer">Brand</Label>
           <Select
             value={formData.manufacturer}
@@ -189,8 +189,8 @@ export function FilamentDialog({
           </Select>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
+        <div className="grid grid-cols-2 gap-4 w-full min-w-0">
+          <div className="space-y-2 min-w-0">
             <Label htmlFor="material">Material</Label>
             <Select
               value={formData.material}
@@ -207,10 +207,10 @@ export function FilamentDialog({
                     {material}
                   </SelectItem>
                 ))}
-              </SelectContent>
-            </Select>
+            </SelectContent>
+          </Select>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2 min-w-0">
             <Label htmlFor="diameter">Diameter (mm)</Label>
             <Select
               value={formData.diameter}
@@ -232,9 +232,10 @@ export function FilamentDialog({
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 w-full min-w-0">
           <Label>Color</Label>
-          <div className="flex flex-nowrap gap-1.5 overflow-x-auto pb-1 min-w-0">
+          <div className="w-full min-w-0 overflow-hidden">
+            <div className="flex flex-nowrap gap-1.5 overflow-x-auto pb-1 min-w-0 -mx-0.5">
             {COLOR_PRESETS.map((preset) => (
               <button
                 key={preset.name}
@@ -251,15 +252,16 @@ export function FilamentDialog({
                 <span className="sr-only">{preset.name}</span>
               </button>
             ))}
+            </div>
           </div>
-          <div className="flex gap-2 mt-2">
+          <div className="flex gap-2 mt-2 w-full min-w-0">
             <Input
               value={formData.color}
               onChange={(e) =>
                 setFormData({ ...formData, color: e.target.value })
               }
               placeholder="Color name"
-              className="flex-1"
+              className="flex-1 min-w-0 w-0"
             />
             <Input
               type="color"
@@ -272,8 +274,8 @@ export function FilamentDialog({
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
-          <div className="space-y-2">
+        <div className="grid grid-cols-3 gap-4 w-full min-w-0">
+          <div className="space-y-2 min-w-0">
             <Label htmlFor="totalWeight">Total Weight (g)</Label>
             <Input
               id="totalWeight"
@@ -286,7 +288,7 @@ export function FilamentDialog({
               required
             />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2 min-w-0">
             <Label htmlFor="remainingWeight">Remaining (g)</Label>
             <Input
               id="remainingWeight"
@@ -303,7 +305,7 @@ export function FilamentDialog({
               required
             />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2 min-w-0">
             <Label htmlFor="price">Price ($)</Label>
             <Input
               id="price"
@@ -319,7 +321,7 @@ export function FilamentDialog({
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 w-full min-w-0">
           <Label htmlFor="name">Description</Label>
           <Input
             id="name"
@@ -328,6 +330,7 @@ export function FilamentDialog({
               setFormData({ ...formData, name: e.target.value })
             }
             placeholder="e.g., Matte Black PLA"
+            className="w-full min-w-0"
           />
         </div>
       </div>
@@ -342,15 +345,15 @@ export function FilamentDialog({
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-[92vh] rounded-t-2xl border-t border-[#F26D00]/20 bg-white [&>div:first-child]:!h-1.5 [&>div:first-child]:!w-9 [&>div:first-child]:!mt-3 [&>div:first-child]:!min-h-0 [&>div:first-child]:!min-w-0">
-          <DrawerHeader className="pb-2">
+        <DrawerContent className="max-h-[92vh] w-full max-w-full rounded-t-2xl border-t border-[#F26D00]/20 bg-white overflow-hidden [&>div:first-child]:!h-1.5 [&>div:first-child]:!w-9 [&>div:first-child]:!mt-3 [&>div:first-child]:!min-h-0 [&>div:first-child]:!min-w-0">
+          <DrawerHeader className="pb-2 flex-shrink-0">
             <DrawerTitle className="text-xl text-gray-900">{title}</DrawerTitle>
             <DrawerDescription className="text-sm text-gray-500">
               {description}
             </DrawerDescription>
           </DrawerHeader>
-          <form onSubmit={handleSubmit} className="flex flex-col min-h-0">
-            <div className="flex-1 overflow-y-auto px-4 pb-4">{formBody}</div>
+          <form onSubmit={handleSubmit} className="flex flex-col min-h-0 min-w-0 flex-1">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 pb-4 min-w-0">{formBody}</div>
             <DrawerFooter className="flex-row gap-2 border-t border-gray-100 pt-4 pb-6 px-4" style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}>
               <Button
                 type="button"

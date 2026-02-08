@@ -144,7 +144,7 @@ export function PrintedPartDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto" bottomSheet>
+      <DialogContent className="max-h-[85vh] overflow-y-auto overflow-x-hidden w-full max-w-full" bottomSheet>
         <DialogHeader>
           <DialogTitle>
             {editPart ? "Edit Printed Part" : "Add Printed Part"}
@@ -155,8 +155,8 @@ export function PrintedPartDialog({
               : "Record a new 3D printed part."}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 py-4">
+        <form onSubmit={handleSubmit} className="w-full min-w-0">
+          <div className="grid w-full min-w-0 gap-4 py-4">
             {/* Part photo hidden for now */}
             {false && (
               <div className="space-y-2">
@@ -179,7 +179,7 @@ export function PrintedPartDialog({
               </div>
             )}
 
-            <div className="space-y-2">
+            <div className="space-y-2 w-full min-w-0">
               <Label htmlFor="name">Part Name</Label>
               <Input
                 id="name"
@@ -193,7 +193,7 @@ export function PrintedPartDialog({
             </div>
 
             {projects.length > 0 && (
-              <div className="space-y-2">
+              <div className="space-y-2 w-full min-w-0">
                 <Label htmlFor="project">Project (optional)</Label>
                 <Select
                   value={formData.projectId || "none"}
@@ -201,7 +201,7 @@ export function PrintedPartDialog({
                     setFormData({ ...formData, projectId: value === "none" ? "" : value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="None" />
                   </SelectTrigger>
                   <SelectContent>
@@ -216,7 +216,7 @@ export function PrintedPartDialog({
               </div>
             )}
 
-            <div className="space-y-2">
+            <div className="space-y-2 w-full min-w-0">
               <Label htmlFor="filament">Filament Used</Label>
               <Select
                 value={formData.filamentId}
@@ -224,7 +224,7 @@ export function PrintedPartDialog({
                   setFormData({ ...formData, filamentId: value })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -243,8 +243,8 @@ export function PrintedPartDialog({
               </Select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-4 w-full min-w-0">
+              <div className="space-y-2 min-w-0">
                 <Label htmlFor="weightUsed">Weight Used (g)</Label>
                 <Input
                   id="weightUsed"
@@ -258,7 +258,7 @@ export function PrintedPartDialog({
                   required
                 />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 min-w-0">
                 <Label htmlFor="printDate">Print Date</Label>
                 <Input
                   id="printDate"
@@ -273,10 +273,10 @@ export function PrintedPartDialog({
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 w-full min-w-0">
               <Label>Print Time</Label>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
+              <div className="grid grid-cols-2 gap-2 w-full min-w-0">
+                <div className="min-w-0">
                   <Input
                     type="number"
                     value={formData.printTimeHours}
@@ -288,9 +288,10 @@ export function PrintedPartDialog({
                     }
                     placeholder="Hours"
                     min="0"
+                    className="w-full"
                   />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <Input
                     type="number"
                     value={formData.printTimeMinutes}
@@ -303,12 +304,13 @@ export function PrintedPartDialog({
                     placeholder="Minutes"
                     min="0"
                     max="59"
+                    className="w-full"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 w-full min-w-0">
               <Label htmlFor="notes">Notes (Optional)</Label>
               <Textarea
                 id="notes"
