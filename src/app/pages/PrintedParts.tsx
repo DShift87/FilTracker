@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router";
 import { Button } from "@/app/components/ui/button";
 import { PrintedPartCard } from "@/app/components/PrintedPartCard";
 import { PrintedPartDialog } from "@/app/components/PrintedPartDialog";
+import { ImageScanPartDialog } from "@/app/components/ImageScanPartDialog";
 import { ProjectCard } from "@/app/components/ProjectCard";
 import { ProjectDialog } from "@/app/components/ProjectDialog";
 import { useAddAction } from "@/app/context/AddActionContext";
@@ -42,6 +43,12 @@ export function PrintedParts() {
     deleteProject,
   } = useApp();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [imageScanOpen, setImageScanOpen] = useState(false);
+  const [scannedInitialData, setScannedInitialData] = useState<{
+    printTimeHours: number;
+    printTimeMinutes: number;
+    notes: string;
+  } | null>(null);
   const [projectDialogOpen, setProjectDialogOpen] = useState(false);
   const [editingPart, setEditingPart] = useState<PrintedPart | null>(null);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -201,7 +208,12 @@ export function PrintedParts() {
             <Button variant="ghost" size="icon" onClick={toggleSearch}>
               <SearchIcon />
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => {}}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setImageScanOpen(true)}
+              aria-label="Scan image for part info"
+            >
               <QrScannerIcon />
             </Button>
             <Button variant="ghost" size="icon" onClick={() => {}}>
@@ -366,10 +378,28 @@ export function PrintedParts() {
         open={dialogOpen}
         onOpenChange={(open) => {
           setDialogOpen(open);
-          if (!open) setEditingPart(null);
+          if (!open) {
+            setEditingPart(null);
+            setScannedInitialData(null);
+          }
         }}
         onSave={handleSavePart}
         editPart={editingPart}
+        initialData={scannedInitialData ?? undefined}
+      />
+      <ImageScanPartDialog
+        open={imageScanOpen}
+        onOpenChange={setImageScanOpen}
+        onExtract={(data) => {
+          setScannedInitialData({
+            printTimeHours: data.printTimeHours,
+            printTimeMinutes: data.printTimeMinutes,
+            notes: data.notes,
+          });
+          setImageScanOpen(false);
+          setEditingPart(null);
+          setDialogOpen(true);
+        }}
       />
       {/* Project Dialog */}
       <ProjectDialog

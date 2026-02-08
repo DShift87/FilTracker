@@ -22,6 +22,12 @@ import { PrintedPart } from "@/app/context/AppContext";
 import { useApp } from "@/app/context/AppContext";
 import { resizeImageToDataUrl } from "@/app/lib/imageUtils";
 
+export interface PartDialogInitialData {
+  printTimeHours?: number;
+  printTimeMinutes?: number;
+  notes?: string;
+}
+
 interface PrintedPartDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -29,6 +35,8 @@ interface PrintedPartDialogProps {
   editPart?: PrintedPart | null;
   /** When adding a new part, preselect this project. */
   defaultProjectId?: string;
+  /** Pre-fill form when adding (e.g. from image scan). */
+  initialData?: PartDialogInitialData;
 }
 
 export function PrintedPartDialog({
@@ -37,6 +45,7 @@ export function PrintedPartDialog({
   onSave,
   editPart,
   defaultProjectId,
+  initialData,
 }: PrintedPartDialogProps) {
   const { filaments, projects } = useApp();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -69,19 +78,20 @@ export function PrintedPartDialog({
         projectId: editPart.projectId ?? "",
       });
     } else {
-      setFormData({
+      const base = {
         name: "",
         filamentId: filaments[0]?.id || "",
         weightUsed: "",
-        printTimeHours: "",
-        printTimeMinutes: "",
+        printTimeHours: initialData?.printTimeHours != null ? String(initialData.printTimeHours) : "",
+        printTimeMinutes: initialData?.printTimeMinutes != null ? String(initialData.printTimeMinutes) : "",
         printDate: new Date().toISOString().split("T")[0],
-        notes: "",
+        notes: initialData?.notes ?? "",
         imageUrl: "",
         projectId: defaultProjectId ?? "",
-      });
+      };
+      setFormData(base);
     }
-  }, [editPart, open, filaments, defaultProjectId]);
+  }, [editPart, open, filaments, defaultProjectId, initialData]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
