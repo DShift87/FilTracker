@@ -19,25 +19,25 @@ export function PwaUpdatePrompt() {
 
   return (
     <div
-      className="fixed left-4 right-4 top-0 z-[100] mx-auto flex max-w-md items-center justify-between gap-3 rounded-b-2xl border border-[#F26D00]/25 bg-orange-50/90 backdrop-blur-sm px-4 py-3 shadow-[0_4px_12px_rgba(242,109,0,0.12)]"
+      className="animate-in fade-in slide-in-from-top-4 duration-300 fixed left-4 right-4 top-0 z-[100] mx-auto flex max-w-md items-center justify-between gap-2 rounded-b-xl border border-[#F26D00]/25 bg-orange-50/90 backdrop-blur-sm px-3 py-2 shadow-[0_4px_12px_rgba(242,109,0,0.12)]"
       style={{
-        paddingTop: "max(12px, env(safe-area-inset-top))",
+        paddingTop: "max(8px, env(safe-area-inset-top))",
         marginTop: "max(12px, env(safe-area-inset-top))",
       }}
     >
-      <span className="text-sm font-medium text-gray-800">Update available</span>
-      <div className="flex gap-2">
+      <span className="text-xs font-medium text-gray-800">Update available</span>
+      <div className="flex gap-1.5">
         <Button
           variant="outline"
           size="sm"
-          className="shrink-0 rounded-xl border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+          className="h-7 shrink-0 rounded-lg border-gray-200 bg-white px-2.5 text-xs text-gray-700 hover:bg-gray-50"
           onClick={() => setShow(false)}
         >
           Later
         </Button>
         <Button
           size="sm"
-          className="shrink-0 rounded-xl bg-[#F26D00] text-white hover:bg-[#e56300]"
+          className="h-7 shrink-0 rounded-lg bg-[#F26D00] px-2.5 text-xs text-white hover:bg-[#e56300]"
           onClick={handleRefresh}
         >
           Refresh
