@@ -243,7 +243,7 @@ export function PrintedPartDialog({
               </Select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 w-full min-w-0">
+            <div className="grid grid-cols-[1fr_1fr] gap-4 w-full min-w-0">
               <div className="space-y-2 min-w-0">
                 <Label htmlFor="weightUsed">Weight Used (g)</Label>
                 <Input
@@ -254,7 +254,7 @@ export function PrintedPartDialog({
                     setFormData({ ...formData, weightUsed: e.target.value })
                   }
                   min="0"
-                  className="h-9 min-h-9"
+                  className="w-full h-9 min-h-9"
                   required
                 />
               </div>
@@ -267,7 +267,7 @@ export function PrintedPartDialog({
                   onChange={(e) =>
                     setFormData({ ...formData, printDate: e.target.value })
                   }
-                  className="!h-9 min-h-9"
+                  className="w-full h-9 min-h-9"
                   required
                 />
               </div>
@@ -275,7 +275,7 @@ export function PrintedPartDialog({
 
             <div className="space-y-2 w-full min-w-0">
               <Label>Print Time</Label>
-              <div className="grid grid-cols-2 gap-2 w-full min-w-0">
+              <div className="grid grid-cols-[1fr_1fr] gap-2 w-full min-w-0">
                 <div className="min-w-0">
                   <Input
                     type="number"
@@ -288,7 +288,7 @@ export function PrintedPartDialog({
                     }
                     placeholder="Hours"
                     min="0"
-                    className="w-full"
+                    className="w-full h-9 min-h-9"
                   />
                 </div>
                 <div className="min-w-0">
@@ -304,7 +304,7 @@ export function PrintedPartDialog({
                     placeholder="Minutes"
                     min="0"
                     max="59"
-                    className="w-full"
+                    className="w-full h-9 min-h-9"
                   />
                 </div>
               </div>
