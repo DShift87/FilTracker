@@ -19,23 +19,25 @@ export function PwaUpdatePrompt() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-[100] flex items-center justify-between gap-3 bg-primary px-4 py-3 text-primary-foreground shadow-lg safe-area-pb"
-      style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
+      className="fixed left-4 right-4 top-0 z-[100] mx-auto flex max-w-md items-center justify-between gap-3 rounded-b-2xl border border-[#F26D00]/25 bg-orange-50/90 backdrop-blur-sm px-4 py-3 shadow-[0_4px_12px_rgba(242,109,0,0.12)]"
+      style={{
+        paddingTop: "max(12px, env(safe-area-inset-top))",
+        marginTop: "max(12px, env(safe-area-inset-top))",
+      }}
     >
-      <span className="text-sm font-medium">Update available</span>
+      <span className="text-sm font-medium text-gray-800">Update available</span>
       <div className="flex gap-2">
         <Button
-          variant="secondary"
+          variant="outline"
           size="sm"
-          className="shrink-0"
+          className="shrink-0 rounded-xl border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
           onClick={() => setShow(false)}
         >
           Later
         </Button>
         <Button
-          variant="secondary"
           size="sm"
-          className="shrink-0 bg-white text-primary hover:bg-gray-100"
+          className="shrink-0 rounded-xl bg-[#F26D00] text-white hover:bg-[#e56300]"
           onClick={handleRefresh}
         >
           Refresh
