@@ -262,7 +262,7 @@ export function PrintedPartDialog({
               </div>
               <div className="flex-1 min-w-0 flex flex-col gap-1.5">
                 <Label htmlFor="printDate">Print Date</Label>
-                <div className="h-[36px] w-full min-w-0 overflow-hidden rounded-md border border-input bg-input-background [&_input]:h-full [&_input]:min-h-full [&_input]:max-h-full [&_input]:border-0 [&_input]:rounded-md [&_input::-webkit-datetime-edit]:!py-0 [&_input::-webkit-datetime-edit]:!leading-[36px] [&_input::-webkit-datetime-edit-fields-wrapper]:!py-0">
+                <div className="h-[36px] w-full min-w-0 overflow-hidden rounded-md border border-input bg-input-background [&_input]:h-full [&_input]:min-h-full [&_input]:max-h-full [&_input]:border-0 [&_input]:rounded-md [&_input]:text-center [&_input::-webkit-datetime-edit]:!py-0 [&_input::-webkit-datetime-edit]:!leading-[36px] [&_input::-webkit-datetime-edit]:!text-center [&_input::-webkit-datetime-edit-fields-wrapper]:!py-0 [&_input::-webkit-datetime-edit]:!text-sm">
                   <Input
                     id="printDate"
                     type="date"
@@ -270,7 +270,7 @@ export function PrintedPartDialog({
                     onChange={(e) =>
                       setFormData({ ...formData, printDate: e.target.value })
                     }
-                    className="w-full min-w-0 h-full min-h-full max-h-full border-0 rounded-md text-base md:text-sm"
+                    className="w-full min-w-0 h-full min-h-full max-h-full border-0 rounded-md text-sm text-center"
                     required
                   />
                 </div>
