@@ -21,6 +21,8 @@ import {
 import { PrintedPart } from "@/app/context/AppContext";
 import { useApp } from "@/app/context/AppContext";
 import { resizeImageToDataUrl } from "@/app/lib/imageUtils";
+import { FilamentIcon } from "@/imports/filament-icon";
+import { isLightColor } from "@/app/components/ui/utils";
 
 export interface PartDialogInitialData {
   printTimeHours?: number;
@@ -232,9 +234,14 @@ export function PrintedPartDialog({
                     <SelectItem key={filament.id} value={filament.id}>
                       <div className="flex items-center gap-2">
                         <div
-                          className="w-4 h-4 rounded border border-[#E5E5E5]"
+                          className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 border border-[#E5E5E5]"
                           style={{ backgroundColor: filament.colorHex }}
-                        />
+                        >
+                          <FilamentIcon
+                            active
+                            className={`w-3 h-3 ${isLightColor(filament.colorHex) ? "text-gray-400" : "text-white"}`}
+                          />
+                        </div>
                         {filament.manufacturer} - {filament.material} {filament.color}
                       </div>
                     </SelectItem>
@@ -263,7 +270,7 @@ export function PrintedPartDialog({
               <div className="flex-1 min-w-0 flex flex-col gap-1.5">
                 <Label htmlFor="printDate">Print Date</Label>
                 <div className="relative h-[36px] w-full min-w-0 overflow-hidden rounded-md border border-input bg-input-background">
-                  <div className="absolute inset-0 flex items-center justify-center text-sm text-foreground pointer-events-none">
+                  <div className="absolute inset-0 flex items-center justify-start px-3 text-sm text-foreground pointer-events-none">
                     {formData.printDate
                       ? new Date(formData.printDate + "T12:00:00").toLocaleDateString("en-US", {
                           month: "short",
