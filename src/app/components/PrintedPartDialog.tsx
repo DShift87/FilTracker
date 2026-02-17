@@ -121,7 +121,7 @@ export function PrintedPartDialog({
     const partData: Omit<PrintedPart, "id"> = {
       name: formData.name,
       filamentId: formData.filamentId,
-      weightUsed: parseInt(formData.weightUsed),
+      weightUsed: parseFloat(formData.weightUsed),
       printTime,
       printDate: formData.printDate,
       notes: formData.notes || undefined,
@@ -141,7 +141,7 @@ export function PrintedPartDialog({
   // Calculate estimated cost
   const selectedFilament = filaments.find((f) => f.id === formData.filamentId);
   const estimatedCost = selectedFilament?.price && formData.weightUsed
-    ? (selectedFilament.price / selectedFilament.totalWeight) * parseInt(formData.weightUsed)
+    ? (selectedFilament.price / selectedFilament.totalWeight) * parseFloat(formData.weightUsed)
     : null;
 
   return (
@@ -257,6 +257,7 @@ export function PrintedPartDialog({
                   <Input
                     id="weightUsed"
                     type="number"
+                    step="any"
                     value={formData.weightUsed}
                     onChange={(e) =>
                       setFormData({ ...formData, weightUsed: e.target.value })
@@ -273,10 +274,10 @@ export function PrintedPartDialog({
                   <div className="absolute inset-0 flex items-center justify-start px-3 text-sm text-foreground pointer-events-none">
                     {formData.printDate
                       ? new Date(formData.printDate + "T12:00:00").toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })
                       : ""}
                   </div>
                   <input

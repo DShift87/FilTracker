@@ -9,7 +9,7 @@ import { getDb, isFirebaseConfigured } from "./firebase";
 import type { Filament, Project } from "@/app/context/AppContext";
 import type { PrintedPart } from "@/app/context/AppContext";
 
-const DATA_DOC_PATH = "appData/default";
+const DATA_DOC_PATH = "appData/zWWOwWBn6OXSuFBg6Wx3O0mT3Uj2";
 
 export interface CloudData {
   filaments: Filament[];
@@ -46,7 +46,7 @@ export async function saveCloudData(data: CloudData): Promise<void> {
 export function subscribeToCloudData(
   onData: (data: CloudData) => void
 ): Unsubscribe {
-  if (!isFirebaseConfigured()) return () => {};
+  if (!isFirebaseConfigured()) return () => { };
   const db = getDb();
   const ref = doc(db, DATA_DOC_PATH);
   return onSnapshot(ref, (snap) => {
